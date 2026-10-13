@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scouter Vocabulary | Dragon Ball Theme</title>
+    <!-- Fontes: Bangers (títulos estilo HQ) e Kosugi Maru (japonês arredondado e legível) -->
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Kosugi+Maru&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- PDF.js para ler PDFs localmente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <style>
+        :root {
+            /* Paleta Dragon Ball - TEMA ESCURO */
+            --goku-orange: #FF6F00;
+            --goku-blue: #1565C0;
+            --nimbus-yellow: #FFD600;
+            --dragon-red: #D32F2F;
+            --piccolo-green: #00E676;
+            --scouter-green: #00E676;
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a2e;
+            --bg-input: #16213e;
+            --text-light: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border-dark: #2a2a3e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Kosugi Maru', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 111, 0, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(21, 101, 192, 0.08) 0%, transparent 20%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-family: 'Bangers', cursive;
+            font-size: 4rem;
+            color: var(--goku-orange);
+            text-shadow: 4px 4px 0px var(--goku-blue), -2px -2px 0px var(--nimbus-yellow);
+            letter-spacing: 3px;
+            transform: rotate(-2deg);
+        }
+
+        header p {
+            color: var(--piccolo-green);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 10px;
+            font-family: 'Kosugi Maru', sans-serif;
+        }
+
+        .db-quote {
+            font-style: italic;
+            color: var(--dragon-red);
+            margin-top: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /* Search Box (Scouter Style) */
+        .search-section {
+            background: var(--bg-card);
+            border: 3px solid var(--goku-blue);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: repeating-linear-gradient(45deg, var(--goku-orange), var(--goku-orange) 10px, var(--nimbus-yellow) 10px, var(--nimbus-yellow) 20px);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: 3px solid var(--border-dark);
+            background: var(--bg-input);
+            color: var(--text-light);
+            font-size: 1.3rem;
+            font-family: 'Kosugi Maru', sans-serif;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--goku-orange);
+            box-shadow: 0 0 15px rgba(255, 111, 0, 0.4);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Bangers', cursive;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--goku-orange), var(--dragon-red));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--dragon-red), var(--goku-orange));
+            transform: translateY(-2px);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 3px solid var(--border-dark);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Kosugi Maru', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--goku-blue);
+            color: white;
+            border-color: var(--goku-blue);
+        }
+
+        .tab-btn:hover:not(.active) {
+            border-color: var(--goku-orange);
+            color: var(--goku-orange);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* File Upload */
+        .file-upload-area {
+            border: 3px dashed var(--piccolo-green);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(0, 230, 118, 0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            background: rgba(0, 230, 118, 0.1);
+            border-color: var(--goku-orange);
+        }
+
+        .file-list {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .file-tag {
+            background: var(--bg-input);
+            color: var(--text-light);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Kosugi Maru', sans-serif;
+            border: 1px solid var(--border-dark);
+        }
+
+        .remove-file {
+            color: var(--dragon-red);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Results */
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: var(--bg-input);
+            border-left: 6px solid var(--nimbus-yellow);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .result-card.web {
+            border-left-color: var(--piccolo-green);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-dark);
+        }
+
+        .source-title {
+            color: var(--goku-blue);
+            font-weight: 700;
+            font-size: 1.1rem;
+            font-family: 'Kosugi Maru', sans-serif;
+        }
+
+        .context-snippet {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: var(--text-light);
+            font-family: 'Kosugi Maru', sans-serif;
+        }
+
+        .highlight {
+            background-color: var(--nimbus-yellow);
+            color: var(--dragon-red);
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--goku-orange);
+        }
+
+        .external-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .link-btn {
+            background: var(--bg-input);
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border: 2px solid var(--border-dark);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Kosugi Maru', sans-serif;
+        }
+
+        .link-btn:hover {
+            background: var(--goku-blue);
+            color: white;
+            border-color: var(--goku-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+
+        .link-btn.translate-btn {
+            background: var(--piccolo-green);
+            color: var(--bg-dark);
+            border-color: var(--piccolo-green);
+        }
+
+        .link-btn.translate-btn:hover {
+            background: #00c853;
+            box-shadow: 0 5px 15px rgba(0, 230, 118, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--goku-orange);
+            font-size: 1.3rem;
+            font-family: 'Bangers', cursive;
+            letter-spacing: 1px;
+            display: none;
+        }
+
+        /* Scouter Loading Animation */
+        .scouter-loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--border-dark);
+            border-top: 5px solid var(--piccolo-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 15px var(--piccolo-green);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-pdf { background: var(--dragon-red); color: white; }
+        .badge-web { background: var(--piccolo-green); color: var(--bg-dark); }
+
+        .wiki-text-container {
+            position: relative;
+        }
+
+        .translate-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>SCOUTER VOCABULARY</h1>
+        <p>スカウター単語検索 | Encontre palavras em contextos reais de mangás, livros e documentos.</p>
+        <div class="db-quote">"O poder de aprendizado deste arquivo é de mais de 9000!"</div>
+    </header>
+
+    <div class="search-section">
+        <div class="input-group">
+            <input type="text" id="wordInput" placeholder="Digite uma palavra em japonês (ex: '勉強', '忍者', '食べる')..." autocomplete="off">
+            <button class="btn btn-primary" onclick="performSearch()">スカウト! (Escanear!)</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('web')">🌐 Contexto Web (Japonês)</button>
+            <button class="tab-btn" onclick="switchTab('local')">💊 Arquivos Cápsula (PDF/TXT)</button>
+        </div>
+
+        <!-- Web Search Tab -->
+        <div id="web-tab" class="tab-content active">
+            <p style="margin-bottom: 15px; color: var(--text-muted); font-family: 'Kosugi Maru', sans-serif;">
+                Buscaremos definições e exemplos de uso na Wikipedia em Japonês. Para buscas profundas em dicionários e literatura, use os atalhos abaixo.
+            </p>
+            <div id="web-results" class="results-container"></div>
+            
+            <div class="external-links" id="external-links" style="display: none;">
+                <a href="#" target="_blank" class="link-btn" id="link-jisho">📖 Jisho.org</a>
+                <a href="#" target="_blank" class="link-btn" id="link-weblio">📚 Weblio</a>
+                <a href="#" target="_blank" class="link-btn" id="link-aozora"> Aozora Bunko</a>
+                <a href="#" target="_blank" class="link-btn" id="link-google-news"> Google Notícias</a>
+                <a href="#" target="_blank" class="link-btn" id="link-google-jp">🔍 Google Japan</a>
+            </div>
+        </div>
+
+        <!-- Local File Search Tab -->
+        <div id="local-tab" class="tab-content">
+            <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                <p style="font-size: 1.2rem; color: var(--piccolo-green); margin-bottom: 10px; font-weight: bold;"> Clique para selecionar PDFs ou arquivos de texto</p>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Seus arquivos são processados localmente no seu navegador. Nada é enviado para a internet.</p>
+                <input type="file" id="fileInput" multiple accept=".pdf,.txt" style="display: none;" onchange="handleFiles(this.files)">
+            </div>
+            
+            <div class="file-list" id="fileList"></div>
+            
+            <button class="btn btn-primary" style="margin-top: 20px; width: 100%; background: var(--piccolo-green); color: var(--bg-dark);" onclick="searchLocalFiles()">
+                🔍 Iniciar Varredura de Ki
+            </button>
+
+            <div id="local-loading" class="loading">
+                <div class="scouter-loader"></div>
+                <p>Analisando documentos... (Isso pode levar alguns segundos para PDFs grandes)</p>
+            </div>
+
+            <div id="local-results" class="results-container"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedFiles = [];
+    let currentWikiText = '';
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
+
+    async function performSearch() {
+        const word = document.getElementById('wordInput').value.trim();
+        if (!word) return alert("Por favor, digite uma palavra em japonês!");
+
+        const activeTab = document.querySelector('.tab-content.active').id;
+
+        if (activeTab === 'web-tab') {
+            await searchWeb(word);
+        } else {
+            await searchLocalFiles(word);
+        }
+    }
+
+    // --- WEB SEARCH LOGIC ---
+    async function searchWeb(word) {
+        const resultsContainer = document.getElementById('web-results');
+        const externalLinks = document.getElementById('external-links');
+        
+        resultsContainer.innerHTML = '<div class="loading" style="display:block"><div class="scouter-loader"></div>Consultando a base de dados da Terra...</div>';
+        externalLinks.style.display = 'none';
+        currentWikiText = '';
+
+        try {
+            // Usando Wikipedia em JAPONÊS para contexto real
+            const response = await fetch(`https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.extract) {
+                    currentWikiText = data.extract;
+                    // Regex ajustado para japonês: não usa \b (word boundary) pois japonês não tem espaços.
+                    const regex = new RegExp(`(${word})`, 'g');
+                    const highlightedText = data.extract.replace(regex, '<span class="highlight">$1</span>');
+                    
+                    resultsContainer.innerHTML = `
+                        <div class="result-card web">
+                            <div class="result-header">
+                                <span class="source-title">📖 Wikipedia Japonês (Contexto Enciclopédico)</span>
+                                <span class="badge badge-web">Web</span>
+                            </div>
+                            <div class="wiki-text-container">
+                                <div class="translate-overlay">
+                                    <button class="link-btn translate-btn" onclick="translateWikiText()" style="padding: 8px 15px; font-size: 0.85rem;">
+                                        🌐 Traduzir para Português
+                                    </button>
+                                </div>
+                                <p class="context-snippet" id="wikiText">「${highlightedText}」</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    resultsContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-family: 'Kosugi Maru';">Nenhum contexto enciclopédico direto encontrado. Tente os links externos abaixo.</p>`;
+                }
+            } else {
+                resultsContainer.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-family: 'Kosugi Maru';">Palavra não encontrada na base de dados rápida. Use os links externos.</p>`;
+            }
+        } catch (error) {
+            console.error(error);
+            resultsContainer.innerHTML = `<p style="text-align:center; color: var(--dragon-red); font-family: 'Kosugi Maru';">Erro na conexão com a base de dados. Verifique sua internet.</p>`;
+        }
+
+        // Configurar links externos específicos para aprendizado de japonês
+        document.getElementById('link-jisho').href = `https://jisho.org/search/${encodeURIComponent(word)}`;
+        document.getElementById('link-weblio').href = `https://ejje.weblio.jp/content/${encodeURIComponent(word)}`;
+        document.getElementById('link-aozora').href = `https://www.aozora.gr.jp/search_pages/?da=on&key=${encodeURIComponent(word)}`;
+        document.getElementById('link-google-news').href = `https://news.google.com/search?q=${encodeURIComponent(word)}&hl=ja&gl=JP&ceid=JP:ja`;
+        document.getElementById('link-google-jp').href = `https://www.google.co.jp/search?q="${encodeURIComponent(word)}"`;
+        
+        externalLinks.style.display = 'flex';
+    }
+
+    // Função para traduzir o texto da Wikipedia
+    function translateWikiText() {
+        if (!currentWikiText) return;
+        
+        // Usando Google Translate via URL
+        const translateUrl = `https://translate.google.com/?sl=ja&tl=pt&text=${encodeURIComponent(currentWikiText)}&op=translate`;
+        window.open(translateUrl, '_blank');
+    }
+
+    // --- LOCAL FILE SEARCH LOGIC ---
+    function handleFiles(files) {
+        for (let file of files) {
+            if (!selectedFiles.find(f => f.name === file.name)) {
+                selectedFiles.push(file);
+            }
+        }
+        renderFileList();
+    }
+
+    function renderFileList() {
+        const list = document.getElementById('fileList');
+        list.innerHTML = selectedFiles.map((file, index) => `
+            <div class="file-tag">
+                 ${file.name}
+                <span class="remove-file" onclick="removeFile(${index})">×</span>
+            </div>
+        `).join('');
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        renderFileList();
+    }
+
+    async function searchLocalFiles(specificWord = null) {
+        const word = specificWord || document.getElementById('wordInput').value.trim();
+        if (!word) return alert("Por favor, digite uma palavra para buscar!");
+        if (selectedFiles.length === 0) return alert("Selecione pelo menos um arquivo da Cápsula primeiro!");
+
+        const resultsContainer = document.getElementById('local-results');
+        const loading = document.getElementById('local-loading');
+        
+        resultsContainer.innerHTML = '';
+        loading.style.display = 'block';
+
+        let totalMatches = 0;
+
+        for (let file of selectedFiles) {
+            if (file.name.endsWith('.pdf')) {
+                const matches = await searchPDF(file, word);
+                if (matches.length > 0) {
+                    totalMatches += matches.length;
+                    displayLocalResults(file.name, matches, word, 'PDF');
+                }
+            } else if (file.name.endsWith('.txt')) {
+                const matches = await searchTXT(file, word);
+                if (matches.length > 0) {
+                    totalMatches += matches.length;
+                    displayLocalResults(file.name, matches, word, 'TXT');
+                }
+            } else {
+                alert(`Formato .${file.name.split('.').pop()} não suportado. Use PDF ou TXT.`);
+            }
+        }
+
+        loading.style.display = 'none';
+        
+        if (totalMatches === 0) {
+            resultsContainer.innerHTML = `<p style="text-align:center; color: var(--dragon-red); font-family: 'Kosugi Maru'; font-size: 1.2rem;">Nenhuma ocorrência de "${word}" encontrada nos arquivos selecionados.</p>`;
+        }
+    }
+
+    async function searchPDF(file, word) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+        const matches = [];
+        
+        // Regex ajustada para japonês: captura 60 caracteres antes e depois da palavra, sem \b
+        const regex = new RegExp(`(.{0,60}${word}.{0,60})`, 'g');
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const text = textContent.items.map(item => item.str).join(' ');
+            
+            const pageMatches = text.match(regex);
+            if (pageMatches) {
+                matches.push({
+                    page: i,
+                    snippets: pageMatches
+                });
+            }
+        }
+        return matches;
+    }
+
+    async function searchTXT(file, word) {
+        const text = await file.text();
+        // Regex ajustada para japonês
+        const regex = new RegExp(`(.{0,60}${word}.{0,60})`, 'g');
+        const matches = text.match(regex);
+        
+        if (matches) {
+            return [{ page: 1, snippets: matches }];
+        }
+        return [];
+    }
+
+    function displayLocalResults(fileName, matches, word, type) {
+        const resultsContainer = document.getElementById('local-results');
+        
+        let html = `
+            <div class="result-card">
+                <div class="result-header">
+                    <span class="source-title">💊 ${fileName}</span>
+                    <span class="badge badge-pdf">${type}</span>
+                </div>
+        `;
+
+        matches.forEach(match => {
+            const pageInfo = type === 'PDF' ? `📍 Página ${match.page}` : '📍 Arquivo Completo';
+            
+            match.snippets.forEach(snippet => {
+                // Destacar a palavra (regex global simples para japonês)
+                const highlightRegex = new RegExp(`(${word})`, 'g');
+                const highlightedSnippet = snippet.replace(highlightRegex, '<span class="highlight">$1</span>');
+                
+                html += `
+                    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-dark);">
+                        <div style="color: var(--goku-blue); font-size: 0.9rem; margin-bottom: 8px; font-weight: bold; font-family: 'Kosugi Maru', sans-serif;">
+                            ${pageInfo}
+                        </div>
+                        <p class="context-snippet">「...${highlightedSnippet}...」</p>
+                    </div>
+                `;
+            });
+        });
+
+        html += `</div>`;
+        resultsContainer.innerHTML += html;
+    }
+
+    // Permitir busca ao pressionar Enter
+    document.getElementById('wordInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+</script>
+
+</body>
+</html>

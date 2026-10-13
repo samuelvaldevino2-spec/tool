@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雪女 · Vocabulário Japonês</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+:root {
+    --bg: #0a1929;
+    --bg-light: #0f2744;
+    --card: rgba(15, 39, 68, 0.4);
+    --border: rgba(186, 230, 253, 0.15);
+    --text: #f8fafc;
+    --text-dim: #94a3b8;
+    --accent: #7dd3fc;
+    --success: #6ee7b7;
+    --success-bg: rgba(110, 231, 183, 0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--border);
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+/* Stats */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* Progress */
+.progress-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.progress-percent {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'Noto Serif JP', serif;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(186, 230, 253, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--success));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    width: 0%;
+}
+
+/* Controls */
+.controls {
+    margin-bottom: 30px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.search-input::placeholder { color: var(--text-dim); }
+
+.cat-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.cat-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.cat-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+.cat-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    font-weight: 600;
+}
+
+/* Export buttons */
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.export-btn {
+    padding: 10px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.export-btn:hover {
+    border-color: var(--accent);
+    background: rgba(125, 211, 252, 0.1);
+}
+
+/* Content */
+.category-section {
+    margin-bottom: 40px;
+}
+
+.category-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent);
+}
+
+.words-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+}
+
+.word-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.word-card:hover {
+    border-color: var(--accent);
+}
+
+.word-card.studied {
+    border-color: var(--success);
+    background: var(--success-bg);
+}
+
+.word-card.studied::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    color: var(--success);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.word-kanji {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.word-hiragana {
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-style: italic;
+}
+
+.word-meaning {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+}
+
+.word-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-mark {
+    flex: 1;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.btn-mark:hover {
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.btn-mark.marked {
+    background: var(--success);
+    border-color: var(--success);
+    color: var(--bg);
+    font-weight: 600;
+}
+
+.btn-copy {
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.btn-copy:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--accent);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 600px) {
+    h1 { font-size: 1.5rem; }
+    .words-grid { grid-template-columns: 1fr; }
+    .stat-number { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>雪女 · Vocabulário Japonês</h1>
+        <p class="subtitle">Domine as palavras na neve eterna</p>
+    </header>
+
+    <div class="stats">
+        <div class="stat">
+            <span class="stat-number" id="totalWords">0</span>
+            <span class="stat-label">Total</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number" id="studiedWords">0</span>
+            <span class="stat-label">Estudadas</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number" id="remainingWords">0</span>
+            <span class="stat-label">Restantes</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number" id="categoriesCount">0</span>
+            <span class="stat-label">Categorias</span>
+        </div>
+    </div>
+
+    <div class="progress-section">
+        <div class="progress-header">
+            <span class="progress-label">Progresso de domínio</span>
+            <span class="progress-percent" id="progressPercent">0.00%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <input type="text" class="search-input" id="searchInput" placeholder="Buscar palavra (kanji, hiragana ou português)...">
+        
+        <div class="cat-buttons" id="categoryButtons"></div>
+        
+        <div class="export-buttons">
+            <button class="export-btn" onclick="exportFull()">📊 Exportar tudo (XLSX)</button>
+            <button class="export-btn" onclick="exportStudied()">✓ Exportar estudadas (XLSX)</button>
+        </div>
+    </div>
+
+    <div id="content"></div>
+</div>
+
+<div class="toast" id="toast">Copiado!</div>
+
+<script>
+const vocabulary = {
+    "saudações": {
+        name: "Saudações e Cortesia",
+        words: [
+            ["どうぞ", "por favor; à vontade", "どうぞ"],
+            ["もしもし", "alô", "もしもし"]
+        ]
+    },
+    "família": {
+        name: "Família",
+        words: [
+            ["両親", "pais", "りょうしん"],
+            ["家族", "família", "かぞく"],
+            ["兄弟", "irmãos", "きょうだい"],
+            ["姉", "irmã mais velha", "あね"],
+            ["兄", "irmão mais velho", "あに"],
+            ["妹", "irmã mais nova", "いもうと"],
+            ["弟", "irmão mais novo", "おとうと"],
+            ["父", "pai", "ちち"],
+            ["母", "mãe", "はは"],
+            ["お母さん", "mãe", "おかあさん"],
+            ["お父さん", "pai", "おとうさん"],
+            ["お兄さん", "irmão mais velho", "おにいさん"],
+            ["お姉さん", "irmã mais velha", "おねえさん"],
+            ["おじさん", "tio", "おじさん"],
+            ["おばさん", "tia", "おばさん"],
+            ["おじいさん", "avô", "おじいさん"],
+            ["おばあさん", "avó", "おばあさん"],
+            ["奥さん", "esposa", "おくさん"],
+            ["ご主人", "marido; senhor", "ごしゅじん"],
+            ["家内", "minha esposa", "かない"],
+            ["姉妹", "irmãs", "しまい"],
+            ["祖父", "avô", "そふ"],
+            ["祖母", "avó", "そぼ"],
+            ["夫", "marido", "おっと"],
+            ["妻", "esposa", "つま"]
+        ]
+    },
+    "pessoas": {
+        name: "Pessoas e Profissões",
+        words: [
+            ["留学生", "estudante estrangeiro", "りゅうがくせい"],
+            ["子供", "criança", "こども"],
+            ["男", "homem", "おとこ"],
+            ["女", "mulher", "おんな"],
+            ["男の子", "menino", "おとこのこ"],
+            ["女の子", "menina", "おんなのこ"],
+            ["人", "pessoa", "ひと"],
+            ["医者", "médico", "いしゃ"],
+            ["看護師", "enfermeiro; enfermeira", "かんごし"],
+            ["店員", "funcionário de loja", "てんいん"],
+            ["警官", "policial", "けいかん"],
+            ["消防士", "bombeiro", "しょうぼうし"],
+            ["農家", "agricultor", "のうか"],
+            ["漁師", "pescador", "りょうし"],
+            ["研究者", "pesquisador", "けんきゅうしゃ"],
+            ["赤ちゃん", "bebê", "あかちゃん"]
+        ]
+    },
+    "corpo": {
+        name: "Corpo",
+        words: [
+            ["手", "mão", "て"],
+            ["目", "olho", "め"],
+            ["耳", "ouvido", "みみ"],
+            ["口", "boca", "くち"],
+            ["顔", "rosto", "かお"],
+            ["頭", "cabeça", "あたま"],
+            ["体", "corpo", "からだ"],
+            ["心", "coração; mente", "こころ"],
+            ["背", "altura; costas", "せ"],
+            ["高さ", "altura", "たかさ"],
+            ["長さ", "comprimento", "ながさ"],
+            ["重さ", "peso", "おもさ"]
+        ]
+    },
+    "cores": {
+        name: "Cores",
+        words: [
+            ["赤い", "vermelho", "あかい"],
+            ["青い", "azul", "あおい"],
+            ["白い", "branco", "しろい"],
+            ["黒い", "preto", "くろい"],
+            ["黄色い", "amarelo", "きいろい"],
+            ["茶色い", "marrom", "ちゃいろい"],
+            ["色", "cor", "いろ"],
+            ["色々", "vários; diversos", "いろいろ"]
+        ]
+    },
+    "natureza": {
+        name: "Natureza e Clima",
+        words: [
+            ["山", "montanha", "やま"],
+            ["川", "rio", "かわ"],
+            ["花", "flor", "はな"],
+            ["花瓶", "vaso de flores", "かびん"],
+            ["木", "árvore", "き"],
+            ["海", "mar", "うみ"],
+            ["空", "céu", "そら"],
+            ["雨", "chuva", "あめ"],
+            ["雪", "neve", "ゆき"],
+            ["風", "vento", "かぜ"],
+            ["晴れる", "ficar ensolarado", "はれる"],
+            ["曇り", "tempo nublado", "くもり"],
+            ["天気", "tempo; clima", "てんき"],
+            ["春", "primavera", "はる"],
+            ["夏", "verão", "なつ"],
+            ["秋", "outono", "あき"],
+            ["冬", "inverno", "ふゆ"],
+            ["暑い", "quente; calorento", "あつい"],
+            ["寒い", "frio", "さむい"],
+            ["涼しい", "fresco", "すずしい"],
+            ["温かい", "morno; quente", "あたたかい"],
+            ["冷たい", "frio ao toque", "つめたい"],
+            ["熱い", "quente ao toque", "あつい"],
+            ["鳴く", "emitir som; cantar (animal)", "なく"],
+            ["咲く", "florescer", "さく"],
+            ["池", "lagoa; lago pequeno", "いけ"],
+            ["天気予報", "previsão do tempo", "てんきよほう"],
+            ["台風", "tufão", "たいふう"],
+            ["気温", "temperatura", "きおん"],
+            ["暖かい", "quente; ameno", "あたたかい"]
+        ]
+    },
+    "comida": {
+        name: "Comida e Bebida",
+        words: [
+            ["お弁当", "marmita; lancheira", "おべんとう"],
+            ["朝ご飯", "café da manhã", "あさごはん"],
+            ["昼ご飯", "almoço", "ひるごはん"],
+            ["晩ご飯", "jantar", "ばんごはん"],
+            ["パン", "pão", "ぱん"],
+            ["ご飯", "arroz; refeição", "ごはん"],
+            ["卵", "ovo", "たまご"],
+            ["牛乳", "leite", "ぎゅうにゅう"],
+            ["水", "água", "みず"],
+            ["お茶", "chá", "おちゃ"],
+            ["お酒", "álcool; saquê", "おさけ"],
+            ["飲物", "bebida", "のみもの"],
+            ["果物", "fruta", "くだもの"],
+            ["野菜", "verdura; vegetal", "やさい"],
+            ["肉", "carne", "にく"],
+            ["お肉", "carne", "おにく"],
+            ["牛肉", "carne bovina", "ぎゅうにく"],
+            ["豚肉", "carne suína", "ぶたにく"],
+            ["鶏肉", "carne de frango", "とりにく"],
+            ["魚", "peixe", "さかな"],
+            ["砂糖", "açúcar", "さとう"],
+            ["塩", "sal", "しお"],
+            ["醤油", "molho de soja", "しょうゆ"],
+            ["バター", "manteiga", "ばたー"],
+            ["不味い", "ruim de sabor", "まずい"],
+            ["美味しい", "delicioso", "おいしい"],
+            ["甘い", "doce", "あまい"],
+            ["辛い", "picante", "からい"],
+            ["苦い", "amargo", "にがい"]
+        ]
+    },
+    "cozinha": {
+        name: "Cozinha e Mesa",
+        words: [
+            ["料理", "culinária; comida", "りょうり"],
+            ["食堂", "refeitório; restaurante", "しょくどう"],
+            ["台所", "cozinha", "だいどころ"],
+            ["フォーク", "garfo", "ふぉーく"],
+            ["スプーン", "colher", "すぷーん"],
+            ["箸", "hashi; pauzinhos", "はし"],
+            ["茶碗", "tigela de arroz", "ちゃわん"],
+            ["皿", "prato", "さら"],
+            ["コップ", "copo", "こっぷ"],
+            ["ナイフ", "faca", "ないふ"],
+            ["冷蔵庫", "geladeira", "れいぞうこ"],
+            ["料理人", "cozinheiro; chef", "りょうりにん"]
+        ]
+    },
+    "casa": {
+        name: "Casa e Cômodos",
+        words: [
+            ["本棚", "estante de livros", "ほんだな"],
+            ["箱", "caixa", "はこ"],
+            ["ドア", "porta", "どあ"],
+            ["戸", "porta; porta de correr", "と"],
+            ["窓", "janela", "まど"],
+            ["机", "escrivaninha; mesa", "つくえ"],
+            ["テーブル", "mesa", "てーぶる"],
+            ["椅子", "cadeira", "いす"],
+            ["ベッド", "cama", "べっど"],
+            ["部屋", "quarto; cômodo", "へや"],
+            ["家", "casa", "いえ"],
+            ["内", "dentro; interior", "うち"],
+            ["玄関", "entrada da casa", "げんかん"],
+            ["庭", "jardim", "にわ"],
+            ["灰皿", "cinzeiro", "はいざら"],
+            ["廊下", "corredor", "ろうか"]
+        ]
+    },
+    "banho": {
+        name: "Banho e Higiene",
+        words: [
+            ["石鹸", "sabão", "せっけん"],
+            ["風呂", "banho; banheira", "ふろ"]
+        ]
+    },
+    "roupas": {
+        name: "Roupas e Acessórios",
+        words: [
+            ["鞄", "bolsa; mochila", "かばん"],
+            ["財布", "carteira", "さいふ"],
+            ["鍵", "chave", "かぎ"],
+            ["ハンカチ", "lenço", "はんかち"],
+            ["ネクタイ", "gravata", "ねくたい"],
+            ["ワイシャツ", "camisa social", "わいしゃつ"],
+            ["セーター", "suéter", "せーたー"],
+            ["コート", "casaco", "こーと"],
+            ["上着", "casaco; jaqueta", "うわぎ"],
+            ["ズボン", "calça", "ずぼん"],
+            ["スカート", "saia", "すかーと"],
+            ["服", "roupa", "ふく"],
+            ["靴", "sapato", "くつ"],
+            ["靴下", "meia", "くつした"],
+            ["帽子", "chapéu", "ぼうし"],
+            ["ポケット", "bolso", "ぽけっと"],
+            ["ボタン", "botão", "ぼたん"],
+            ["背広", "terno", "せびろ"]
+        ]
+    },
+    "papelaria": {
+        name: "Objetos e Papelaria",
+        words: [
+            ["紙", "papel", "かみ"],
+            ["ペン", "caneta", "ぺん"],
+            ["ノート", "caderno", "のーと"],
+            ["本", "livro", "ほん"],
+            ["テープ", "fita", "てーぷ"],
+            ["テープレコーダー", "gravador de fita", "てーぷれこーだー"],
+            ["ボールペン", "caneta esferográfica", "ぼーるぺん"],
+            ["万年筆", "caneta-tinteiro", "まんねんひつ"],
+            ["フィルム", "filme; película", "ふぃるむ"],
+            ["封筒", "envelope", "ふうとう"],
+            ["葉書", "cartão-postal", "はがき"],
+            ["手紙", "carta", "てがみ"],
+            ["切手", "selo postal", "きって"],
+            ["切符", "bilhete; passagem", "きっぷ"]
+        ]
+    },
+    "tecnologia": {
+        name: "Tecnologia e Comunicação",
+        words: [
+            ["電話", "telefone", "でんわ"],
+            ["映画", "filme", "えいが"],
+            ["映画館", "cinema", "えいがかん"],
+            ["音楽", "música", "おんがく"],
+            ["ギター", "violão; guitarra", "ぎたー"],
+            ["写真", "fotografia", "しゃしん"],
+            ["カメラ", "câmera", "かめら"],
+            ["パーティー", "festa", "ぱーてぃー"],
+            ["ラジオ", "rádio", "らじお"],
+            ["テレビ", "televisão", "てれび"],
+            ["音楽室", "sala de música", "おんがくしつ"]
+        ]
+    },
+    "escola": {
+        name: "Escola e Estudos",
+        words: [
+            ["学校", "escola", "がっこう"],
+            ["漢字", "kanji", "かんじ"],
+            ["平仮名", "hiragana", "ひらがな"],
+            ["片仮名", "katakana", "かたかな"],
+            ["先生", "professor; mestre", "せんせい"],
+            ["学生", "estudante", "がくせい"],
+            ["勉強", "estudo", "べんきょう"],
+            ["練習", "prática; treino", "れんしゅう"],
+            ["問題", "problema; questão", "もんだい"],
+            ["辞書", "dicionário", "じしょ"],
+            ["字引", "dicionário", "じびき"],
+            ["習う", "aprender", "ならう"],
+            ["覚える", "memorizar; lembrar", "おぼえる"],
+            ["生徒", "aluno; estudante", "せいと"],
+            ["図書館", "biblioteca", "としょかん"],
+            ["作文", "redação", "さくぶん"],
+            ["宿題", "lição de casa", "しゅくだい"],
+            ["授業", "aula", "じゅぎょう"],
+            ["教室", "sala de aula", "きょうしつ"],
+            ["大学", "universidade", "だいがく"],
+            ["試験", "exame; prova", "しけん"],
+            ["成績", "notas; desempenho", "せいせき"],
+            ["例文", "frase de exemplo", "れいぶん"],
+            ["発音", "pronúncia", "はつおん"],
+            ["文章", "texto; frase", "ぶんしょう"],
+            ["単語", "palavra; vocábulo", "たんご"],
+            ["文法", "gramática", "ぶんぽう"],
+            ["数字", "número; algarismo", "すうじ"],
+            ["数学", "matemática", "すうがく"],
+            ["体育", "educação física", "たいいく"],
+            ["図書室", "sala de biblioteca", "としょしつ"],
+            ["練習する", "praticar", "れんしゅうする"]
+        ]
+    },
+    "trabalho": {
+        name: "Trabalho e Empresa",
+        words: [
+            ["会社", "empresa", "かいしゃ"],
+            ["仕事", "trabalho", "しごと"],
+            ["働く", "trabalhar", "はたらく"],
+            ["勤める", "trabalhar para; servir em", "つとめる"],
+            ["社員", "funcionário da empresa", "しゃいん"],
+            ["会社員", "funcionário de empresa", "かいしゃいん"],
+            ["出張", "viagem de negócios", "しゅっちょう"],
+            ["利用", "uso; utilização", "りよう"],
+            ["使用", "uso; utilização", "しよう"],
+            ["禁止", "proibição", "きんし"],
+            ["無料", "gratuito", "むりょう"],
+            ["有料", "pago", "ゆうりょう"],
+            ["受付", "recepção; atendimento", "うけつけ"],
+            ["会議", "reunião", "かいぎ"],
+            ["社長", "presidente; diretor da empresa", "しゃちょう"],
+            ["部長", "chefe de departamento", "ぶちょう"],
+            ["課長", "chefe de seção", "かちょう"],
+            ["同僚", "colega de trabalho", "どうりょう"],
+            ["会話中", "durante uma conversa", "かいわちゅう"],
+            ["仕上げる", "terminar; finalizar", "しあげる"]
+        ]
+    },
+    "transportes": {
+        name: "Transportes e Veículos",
+        words: [
+            ["車", "carro", "くるま"],
+            ["自転車", "bicicleta", "じてんしゃ"],
+            ["自動車", "automóvel", "じどうしゃ"],
+            ["バス", "ônibus", "ばす"],
+            ["タクシー", "táxi", "たくしー"],
+            ["電車", "trem", "でんしゃ"],
+            ["飛行機", "avião", "ひこうき"],
+            ["駅", "estação", "えき"],
+            ["新幹線", "shinkansen; trem-bala", "しんかんせん"],
+            ["運転", "condução; direção", "うんてん"],
+            ["運ぶ", "transportar; carregar", "はこぶ"],
+            ["駅員", "funcionário da estação", "えきいん"],
+            ["出発", "partida; saída", "しゅっぱつ"],
+            ["到着", "chegada", "とうちゃく"]
+        ]
+    },
+    "cidade": {
+        name: "Cidade e Lugares",
+        words: [
+            ["町", "cidade; bairro", "まち"],
+            ["国", "país", "くに"],
+            ["外国", "país estrangeiro", "がいこく"],
+            ["門", "portão", "もん"],
+            ["交番", "posto policial", "こうばん"],
+            ["公園", "parque", "こうえん"],
+            ["病院", "hospital", "びょういん"],
+            ["銀行", "banco", "ぎんこう"],
+            ["デパート", "loja de departamentos", "でぱーと"],
+            ["ホテル", "hotel", "ほてる"],
+            ["レストラン", "restaurante", "れすとらん"],
+            ["喫茶店", "cafeteria", "きっさてん"],
+            ["プール", "piscina", "ぷーる"],
+            ["建物", "edifício; construção", "たてもの"],
+            ["店", "loja", "みせ"],
+            ["八百屋", "verdureiro; hortifrúti", "やおや"],
+            ["魚屋", "peixaria", "さかなや"],
+            ["本屋", "livraria", "ほんや"],
+            ["パン屋", "padaria", "ぱんや"],
+            ["肉屋", "açougue", "にくや"],
+            ["野菜屋", "loja de verduras", "やさいや"],
+            ["空港", "aeroporto", "くうこう"],
+            ["港", "porto", "みなと"],
+            ["売店", "banca; loja pequena", "ばいてん"],
+            ["場所", "lugar", "ばしょ"]
+        ]
+    },
+    "viagem": {
+        name: "Viagem e Deslocamento",
+        words: [
+            ["橋", "ponte", "はし"],
+            ["道", "caminho; rua", "みち"],
+            ["旅行", "viagem", "りょこう"],
+            ["予約", "reserva", "よやく"],
+            ["案内", "orientação; guia", "あんない"],
+            ["地図", "mapa", "ちず"],
+            ["迎える", "buscar; receber", "むかえる"],
+            ["案内する", "guiar; orientar", "あんないする"],
+            ["旅行する", "viajar", "りょこうする"],
+            ["住所", "endereço", "じゅうしょ"]
+        ]
+    },
+    "posicoes": {
+        name: "Posições e Direções",
+        words: [
+            ["入口", "entrada", "いりぐち"],
+            ["出口", "saída", "でぐち"],
+            ["角", "esquina; canto", "かど"],
+            ["隣り", "ao lado; vizinho", "となり"],
+            ["そば", "perto; ao lado", "そば"],
+            ["中", "dentro; meio", "なか"],
+            ["外", "fora", "そと"],
+            ["上", "cima; acima", "うえ"],
+            ["下", "baixo; abaixo", "した"],
+            ["前", "frente; antes", "まえ"],
+            ["後ろ", "atrás", "うしろ"],
+            ["横", "lado; ao lado", "よこ"],
+            ["辺", "redondeza; região", "へん"],
+            ["向こう", "lado oposto; além", "むこう"],
+            ["真直ぐに", "em linha reta", "まっすぐに"],
+            ["左", "esquerda", "ひだり"],
+            ["右", "direita", "みぎ"],
+            ["東", "leste", "ひがし"],
+            ["西", "oeste", "にし"],
+            ["南", "sul", "みなみ"],
+            ["北", "norte", "きた"],
+            ["右側", "lado direito", "みぎがわ"],
+            ["左側", "lado esquerdo", "ひだりがわ"],
+            ["隣", "vizinho; ao lado", "となり"],
+            ["近く", "perto", "ちかく"],
+            ["遠く", "longe", "とおく"]
+        ]
+    },
+    "numeros": {
+        name: "Números e Contadores",
+        words: [
+            ["ゼロ", "zero", "ぜろ"],
+            ["れい", "zero", "れい"],
+            ["一人", "uma pessoa", "ひとり"],
+            ["二人", "duas pessoas", "ふたり"],
+            ["三人", "três pessoas", "さんにん"],
+            ["四人", "quatro pessoas", "よにん"],
+            ["五人", "cinco pessoas", "ごにん"],
+            ["六人", "seis pessoas", "ろくにん"],
+            ["七人", "sete pessoas", "しちにん"],
+            ["八人", "oito pessoas", "はちにん"],
+            ["九人", "nove pessoas", "きゅうにん"],
+            ["十人", "dez pessoas", "じゅうにん"],
+            ["一つ", "um (objeto)", "ひとつ"],
+            ["二つ", "dois (objetos)", "ふたつ"],
+            ["三つ", "três (objetos)", "みっつ"],
+            ["四つ", "quatro (objetos)", "よっつ"],
+            ["五つ", "cinco (objetos)", "いつつ"],
+            ["六つ", "seis (objetos)", "むっつ"],
+            ["七つ", "sete (objetos)", "ななつ"],
+            ["八つ", "oito (objetos)", "やっつ"],
+            ["九つ", "nove (objetos)", "ここのつ"],
+            ["十", "dez", "じゅう"],
+            ["一", "um", "いち"],
+            ["二", "dois", "に"],
+            ["三", "três", "さん"],
+            ["四", "quatro", "よん"],
+            ["五", "cinco", "ご"],
+            ["六", "seis", "ろく"],
+            ["七", "sete", "なな"],
+            ["八", "oito", "はち"],
+            ["九", "nove", "きゅう"],
+            ["百", "cem", "ひゃく"],
+            ["千", "mil", "せん"],
+            ["万", "dez mil", "まん"],
+            ["円", "iene; círculo", "えん"],
+            ["キロ", "quilo; quilômetro", "きろ"],
+            ["グラム", "grama", "ぐらむ"],
+            ["メートル", "metro", "めーとる"],
+            ["〜回", "~vezes", "〜かい"],
+            ["〜階", "~andar", "〜かい"],
+            ["〜枚", "~folhas; peças planas", "〜まい"],
+            ["〜冊", "~volumes; livros", "〜さつ"],
+            ["〜台", "~máquinas; veículos", "〜だい"],
+            ["〜人", "~pessoas", "〜にん"],
+            ["〜本", "~objetos cilíndricos", "〜ほん"],
+            ["〜匹", "~animais pequenos", "〜ひき"],
+            ["〜分", "~minutos", "〜ふん"],
+            ["〜時", "~horas", "〜じ"],
+            ["〜日", "~dias", "〜にち"],
+            ["〜年", "~anos", "〜ねん"],
+            ["〜歳", "~anos de idade", "〜さい"],
+            ["〜週間", "~semanas", "〜しゅうかん"],
+            ["〜か月", "~meses", "〜かげつ"],
+            ["〜屋", "~loja; vendedor", "〜や"],
+            ["一日", "um dia; dia 1", "いちにち"],
+            ["二日", "dois dias; dia 2", "ふつか"],
+            ["三日", "três dias; dia 3", "みっか"],
+            ["四日", "quatro dias; dia 4", "よっか"],
+            ["五日", "cinco dias; dia 5", "いつか"],
+            ["六日", "seis dias; dia 6", "むいか"],
+            ["七日", "sete dias; dia 7", "なのか"],
+            ["八日", "oito dias; dia 8", "ようか"],
+            ["九日", "nove dias; dia 9", "ここのか"],
+            ["十日", "dez dias; dia 10", "とおか"],
+            ["二十日", "vinte dias; dia 20", "はつか"]
+        ]
+    },
+    "calendario": {
+        name: "Calendário e Tempo",
+        words: [
+            ["一月", "janeiro", "いちがつ"],
+            ["二月", "fevereiro", "にがつ"],
+            ["三月", "março", "さんがつ"],
+            ["四月", "abril", "しがつ"],
+            ["五月", "maio", "ごがつ"],
+            ["六月", "junho", "ろくがつ"],
+            ["七月", "julho", "しちがつ"],
+            ["八月", "agosto", "はちがつ"],
+            ["九月", "setembro", "くがつ"],
+            ["十月", "outubro", "じゅうがつ"],
+            ["十一月", "novembro", "じゅういちがつ"],
+            ["十二月", "dezembro", "じゅうにがつ"],
+            ["月曜日", "segunda-feira", "げつようび"],
+            ["火曜日", "terça-feira", "かようび"],
+            ["水曜日", "quarta-feira", "すいようび"],
+            ["木曜日", "quinta-feira", "もくようび"],
+            ["金曜日", "sexta-feira", "きんようび"],
+            ["土曜日", "sábado", "どようび"],
+            ["日曜日", "domingo", "にちようび"],
+            ["今日", "hoje", "きょう"],
+            ["昨日", "ontem", "きのう"],
+            ["明日", "amanhã", "あした"],
+            ["一昨日", "anteontem", "おととい"],
+            ["一昨年", "ano retrasado", "おととし"],
+            ["去年", "ano passado", "きょねん"],
+            ["今年", "este ano", "ことし"],
+            ["来年", "ano que vem", "らいねん"],
+            ["来月", "mês que vem", "らいげつ"],
+            ["来週", "semana que vem", "らいしゅう"],
+            ["今", "agora", "いま"],
+            ["今朝", "esta manhã", "けさ"],
+            ["今晩", "esta noite", "こんばん"],
+            ["今週", "esta semana", "こんしゅう"],
+            ["今月", "este mês", "こんげつ"],
+            ["先週", "semana passada", "せんしゅう"],
+            ["先月", "mês passado", "せんげつ"],
+            ["再来年", "daqui a dois anos", "さらいねん"],
+            ["毎日", "todos os dias", "まいにち"],
+            ["毎週", "toda semana", "まいしゅう"],
+            ["毎月", "todo mês", "まいげつ"],
+            ["毎年", "todo ano", "まいとし"],
+            ["毎朝", "todas as manhãs", "まいあさ"],
+            ["毎晩", "todas as noites", "まいばん"],
+            ["午前", "manhã; a.m.", "ごぜん"],
+            ["午後", "tarde; p.m.", "ごご"],
+            ["夜", "noite", "よる"],
+            ["昼", "dia; meio-dia", "ひる"],
+            ["朝", "manhã", "あさ"],
+            ["夕方", "fim da tarde", "ゆうがた"],
+            ["何時", "que horas", "なんじ"],
+            ["何分", "quantos minutos", "なんぷん"],
+            ["何曜日", "que dia da semana", "なんようび"],
+            ["最近", "recentemente", "さいきん"],
+            ["将来", "futuro", "しょうらい"],
+            ["今回", "desta vez", "こんかい"],
+            ["次回", "próxima vez", "じかい"]
+        ]
+    },
+    "adjetivos": {
+        name: "Adjetivos e Estados",
+        words: [
+            ["元気", "bem; saudável; animado", "げんき"],
+            ["便利", "prático; conveniente", "べんり"],
+            ["大切", "importante; precioso", "たいせつ"],
+            ["面白い", "interessante; divertido", "おもしろい"],
+            ["つまらない", "entediante", "つまらない"],
+            ["好き", "gostar; agradável", "すき"],
+            ["嫌い", "não gostar; desagradável", "きらい"],
+            ["厚い", "grosso", "あつい"],
+            ["薄い", "fino", "うすい"],
+            ["太い", "grosso; espesso", "ふとい"],
+            ["細い", "fino; delgado", "ほそい"],
+            ["長い", "longo", "ながい"],
+            ["短い", "curto", "みじかい"],
+            ["高い", "alto; caro", "たかい"],
+            ["低い", "baixo", "ひくい"],
+            ["大きい", "grande", "おおきい"],
+            ["小さい", "pequeno", "ちいさい"],
+            ["新しい", "novo", "あたらしい"],
+            ["古い", "velho; antigo", "ふるい"],
+            ["重い", "pesado", "おもい"],
+            ["軽い", "leve", "かるい"],
+            ["強い", "forte", "つよい"],
+            ["弱い", "fraco", "よわい"],
+            ["早い", "cedo; rápido", "はやい"],
+            ["速い", "rápido", "はやい"],
+            ["遅い", "tarde; lento", "おそい"],
+            ["明るい", "claro; luminoso", "あかるい"],
+            ["暗い", "escuro", "くらい"],
+            ["きれい", "bonito; limpo", "きれい"],
+            ["汚い", "sujo", "きたない"],
+            ["賑やか", "animado; movimentado", "にぎやか"],
+            ["静か", "silencioso; tranquilo", "しずか"],
+            ["狭い", "estreito", "せまい"],
+            ["広い", "amplo; espaçoso", "ひろい"],
+            ["危ない", "perigoso", "あぶない"],
+            ["安い", "barato", "やすい"],
+            ["可愛い", "fofo; bonitinho", "かわいい"],
+            ["優しい", "gentil; amável", "やさしい"],
+            ["丈夫", "resistente; robusto", "じょうぶ"],
+            ["上手", "habilidoso", "じょうず"],
+            ["下手", "não habilidoso", "へた"],
+            ["立派", "excelente; magnífico", "りっぱ"],
+            ["有名", "famoso", "ゆうめい"],
+            ["痛い", "dolorido", "いたい"],
+            ["忙しい", "ocupado", "いそがしい"],
+            ["楽しい", "divertido; agradável", "たのしい"],
+            ["難しい", "difícil", "むずかしい"],
+            ["大変", "difícil; trabalhoso", "たいへん"],
+            ["大丈夫", "tudo bem; sem problema", "だいじょうぶ"],
+            ["大好き", "adorar; gostar muito", "だいすき"],
+            ["必要", "necessário", "ひつよう"],
+            ["丸い", "redondo", "まるい"],
+            ["四角い", "quadrado", "しかくい"],
+            ["若い", "jovem", "わかい"],
+            ["暇", "livre; desocupado", "ひま"],
+            ["同じ", "igual; mesmo", "おなじ"],
+            ["違う", "ser diferente; estar errado", "ちがう"],
+            ["安全", "seguro; segurança", "あんぜん"],
+            ["不便", "inconveniente", "ふべん"],
+            ["簡単", "fácil; simples", "かんたん"],
+            ["複雑", "complexo", "ふくざつ"],
+            ["特別", "especial", "とくべつ"],
+            ["大事", "importante", "だいじ"],
+            ["無理", "impossível; excessivo", "むり"]
+        ]
+    },
+    "verbos_movimento": {
+        name: "Verbos de Movimento",
+        words: [
+            ["行く", "ir", "いく"],
+            ["来る", "vir", "くる"],
+            ["帰る", "voltar para casa", "かえる"],
+            ["立つ", "ficar de pé", "たつ"],
+            ["座る", "sentar-se", "すわる"],
+            ["止まる", "parar", "とまる"],
+            ["歩く", "andar; caminhar", "あるく"],
+            ["渡る", "atravessar", "わたる"],
+            ["入る", "entrar", "はいる"],
+            ["出る", "sair", "でる"],
+            ["曲がる", "virar; dobrar", "まがる"],
+            ["並ぶ", "formar fila; alinhar-se", "ならぶ"],
+            ["乗る", "embarcar; andar de", "のる"],
+            ["降りる", "descer; desembarcar", "おりる"],
+            ["着く", "chegar", "つく"],
+            ["渡す", "entregar; passar", "わたす"],
+            ["登る", "subir; escalar", "のぼる"],
+            ["飛ぶ", "voar", "とぶ"],
+            ["泳ぐ", "nadar", "およぐ"],
+            ["出かける", "sair; ir a algum lugar", "でかける"]
+        ]
+    },
+    "verbos_acoes": {
+        name: "Verbos de Ações e Objetos",
+        words: [
+            ["食べる", "comer", "たべる"],
+            ["見る", "ver", "みる"],
+            ["書く", "escrever", "かく"],
+            ["飲む", "beber", "のむ"],
+            ["読む", "ler", "よむ"],
+            ["撮る", "tirar; fotografar", "とる"],
+            ["取る", "pegar; tirar", "とる"],
+            ["作る", "fazer; criar", "つくる"],
+            ["開く", "abrir-se", "あく"],
+            ["開ける", "abrir", "あける"],
+            ["閉まる", "fechar-se", "しまる"],
+            ["閉める", "fechar", "しめる"],
+            ["始まる", "começar", "はじまる"],
+            ["終わる", "terminar", "おわる"],
+            ["消える", "apagar-se; desaparecer", "きえる"],
+            ["消す", "apagar; desligar", "けす"],
+            ["点ける", "acender; ligar", "つける"],
+            ["使う", "usar", "つかう"],
+            ["借りる", "pegar emprestado", "かりる"],
+            ["貸す", "emprestar", "かす"],
+            ["返す", "devolver", "かえす"],
+            ["送る", "enviar", "おくる"],
+            ["買う", "comprar", "かう"],
+            ["売る", "vender", "うる"],
+            ["洗う", "lavar", "あらう"],
+            ["浴びる", "tomar banho", "あびる"],
+            ["磨く", "escovar; polir", "みがく"],
+            ["吸う", "fumar; aspirar", "すう"],
+            ["吹く", "soprar", "ふく"],
+            ["弾く", "tocar instrumento", "ひく"],
+            ["引く", "puxar", "ひく"],
+            ["押す", "empurrar; apertar", "おす"],
+            ["張る", "esticar; estender", "はる"],
+            ["片付け", "arrumação; organização", "かたづけ"],
+            ["落とす", "deixar cair", "おとす"],
+            ["拾う", "pegar do chão", "ひろう"]
+        ]
+    },
+    "verbos_comunicacao": {
+        name: "Verbos de Comunicação e Pensamento",
+        words: [
+            ["会う", "encontrar-se", "あう"],
+            ["話す", "falar", "はなす"],
+            ["聞く", "ouvir; perguntar", "きく"],
+            ["答える", "responder", "こたえる"],
+            ["質問", "pergunta", "しつもん"],
+            ["教える", "ensinar; informar", "おしえる"],
+            ["分かる", "entender", "わかる"],
+            ["知る", "saber; conhecer", "しる"],
+            ["思う", "pensar; achar", "おもう"],
+            ["言う", "dizer", "いう"],
+            ["呼ぶ", "chamar", "よぶ"],
+            ["待つ", "esperar", "まつ"],
+            ["返事", "resposta", "へんじ"],
+            ["会話", "conversa", "かいわ"],
+            ["連絡", "contato; comunicação", "れんらく"],
+            ["相談", "consulta; aconselhamento", "そうだん"],
+            ["説明する", "explicar", "せつめいする"],
+            ["紹介する", "apresentar", "しょうかいする"]
+        ]
+    },
+    "verbos_gerais": {
+        name: "Verbos Gerais",
+        words: [
+            ["走る", "correr", "はしる"],
+            ["並べる", "alinhar; colocar em fila", "ならべる"],
+            ["生まれる", "nascer", "うまれる"],
+            ["死ぬ", "morrer", "しぬ"],
+            ["休む", "descansar; faltar", "やすむ"],
+            ["忘れる", "esquecer", "わすれる"],
+            ["住む", "morar", "すむ"],
+            ["運動する", "fazer exercício", "うんどうする"],
+            ["散歩する", "passear; caminhar", "さんぽする"]
+        ]
+    },
+    "adverbios": {
+        name: "Advérbios e Conectores",
+        words: [
+            ["多分", "provavelmente", "たぶん"],
+            ["本当に", "realmente", "ほんとうに"],
+            ["もう", "já; mais", "もう"],
+            ["まだ", "ainda", "まだ"],
+            ["また", "de novo; também", "また"],
+            ["いつも", "sempre", "いつも"],
+            ["時々", "às vezes", "ときどき"],
+            ["さあ", "bem; vamos ver", "さあ"],
+            ["しかし", "porém; mas", "しかし"],
+            ["そして", "e então", "そして"],
+            ["それから", "depois disso", "それから"],
+            ["それでは", "então; nesse caso", "それでは"],
+            ["でも", "mas", "でも"],
+            ["じゃ", "bem; então", "じゃ"],
+            ["そう", "assim; isso mesmo", "そう"],
+            ["そうして", "e assim", "そうして"],
+            ["こんな", "este tipo de", "こんな"],
+            ["どんな", "que tipo de", "どんな"],
+            ["この", "este; esta", "この"],
+            ["その", "esse; essa", "その"],
+            ["あの", "aquele; aquela", "あの"],
+            ["どの", "qual; que", "どの"],
+            ["これ", "isto; este", "これ"],
+            ["それ", "isso; esse", "それ"],
+            ["あれ", "aquilo; aquele", "あれ"],
+            ["どれ", "qual", "どれ"],
+            ["そちら", "aí; desse lado", "そちら"],
+            ["あちら", "lá; daquele lado", "あちら"],
+            ["どちら", "qual lado; onde", "どちら"],
+            ["いつ", "quando", "いつ"],
+            ["いくつ", "quantos; quantos anos", "いくつ"],
+            ["いくら", "quanto", "いくら"],
+            ["どう", "como", "どう"],
+            ["もちろん", "claro; naturalmente", "もちろん"],
+            ["ありがとう", "obrigado", "ありがとう"],
+            ["さようなら", "adeus", "さようなら"],
+            ["もっと", "mais", "もっと"],
+            ["よく", "bem; frequentemente", "よく"],
+            ["すぐに", "imediatamente", "すぐに"],
+            ["少し", "um pouco", "すこし"],
+            ["ちょっと", "um pouco; um instante", "ちょっと"],
+            ["だんだん", "gradualmente", "だんだん"],
+            ["たいてい", "geralmente", "たいてい"],
+            ["ぐらい", "aproximadamente", "ぐらい"],
+            ["ちゃんと", "corretamente; direito", "ちゃんと"],
+            ["たくさん", "muitos; bastante", "たくさん"],
+            ["とても", "muito", "とても"],
+            ["たいへん", "muito; extremamente", "たいへん"],
+            ["静かに", "silenciosamente", "しずかに"],
+            ["ゆっくり", "devagar", "ゆっくり"],
+            ["早く", "cedo; rapidamente", "はやく"],
+            ["すぐ", "logo; imediatamente", "すぐ"],
+            ["後で", "mais tarde", "あとで"],
+            ["前に", "antes; anteriormente", "まえに"],
+            ["例えば", "por exemplo", "たとえば"],
+            ["だから", "por isso; portanto", "だから"],
+            ["もし", "se; caso", "もし"],
+            ["どうやって", "como; de que maneira", "どうやって"]
+        ]
+    },
+    "referencias": {
+        name: "Referências e Perguntas",
+        words: [
+            ["ここ", "aqui", "ここ"],
+            ["そこ", "aí; ali", "そこ"],
+            ["あそこ", "ali; lá", "あそこ"],
+            ["こちら", "aqui; deste lado", "こちら"],
+            ["どこ", "onde", "どこ"],
+            ["何", "o que", "なに"],
+            ["誰", "quem", "だれ"],
+            ["どうして", "por quê", "どうして"]
+        ]
+    },
+    "gramatica": {
+        name: "Gramática e Expressões",
+        words: [
+            ["いる", "existir; estar (seres vivos)", "いる"],
+            ["ある", "haver; existir", "ある"],
+            ["有る", "existir; haver", "ある"],
+            ["〜語", "~idiomas; palavras", "〜ご"],
+            ["ください", "por favor; dê-me", "ください"],
+            ["はい", "sim", "はい"],
+            ["いいえ", "não", "いいえ"],
+            ["ええ", "sim; é", "ええ"],
+            ["ごろ", "por volta de", "ごろ"],
+            ["なる", "tornar-se", "なる"],
+            ["する", "fazer", "する"],
+            ["やる", "fazer; realizar", "やる"],
+            ["以上", "acima de; mais que", "いじょう"],
+            ["以下", "abaixo de; no máximo", "いか"],
+            ["未満", "menos que", "みまん"],
+            ["以上です", "é tudo; isso é tudo", "いじょうです"]
+        ]
+    },
+    "vida": {
+        name: "Vida e Sociedade",
+        words: [
+            ["外国人", "estrangeiro", "がいこくじん"],
+            ["日本", "Japão", "にほん"],
+            ["英語", "inglês", "えいご"],
+            ["結婚", "casamento", "けっこん"],
+            ["大使館", "embaixada", "たいしかん"],
+            ["物", "coisa; objeto", "もの"],
+            ["物語", "história; conto", "ものがたり"],
+            ["言葉", "palavra; linguagem", "ことば"],
+            ["意味", "significado", "いみ"],
+            ["生活", "vida cotidiana", "せいかつ"],
+            ["世界", "mundo", "せかい"],
+            ["文化", "cultura", "ぶんか"],
+            ["歴史", "história", "れきし"],
+            ["科学", "ciência", "かがく"],
+            ["理由", "motivo; razão", "りゆう"],
+            ["本当", "verdade; real", "ほんとう"],
+            ["嘘", "mentira", "うそ"],
+            ["予定", "plano; programação", "よてい"],
+            ["約束", "promessa; compromisso", "やくそく"],
+            ["用事", "assunto; compromisso", "ようじ"],
+            ["都合", "conveniência; disponibilidade", "つごう"],
+            ["準備", "preparação", "じゅんび"],
+            ["心配", "preocupação", "しんぱい"],
+            ["安心", "alívio; tranquilidade", "あんしん"],
+            ["決める", "decidir", "きめる"],
+            ["選ぶ", "escolher", "えらぶ"],
+            ["比べる", "comparar", "くらべる"],
+            ["間違える", "errar; confundir", "まちがえる"],
+            ["趣味", "hobby; passatempo", "しゅみ"],
+            ["特技", "habilidade especial", "とくぎ"],
+            ["興味", "interesse", "きょうみ"],
+            ["残念ながら", "infelizmente", "ざんねんながら"]
+        ]
+    },
+    "identidade": {
+        name: "Identidade e Informações",
+        words: [
+            ["番号", "número", "ばんごう"],
+            ["名前", "nome", "なまえ"],
+            ["誕生日", "aniversário", "たんじょうび"],
+            ["年齢", "idade", "ねんれい"]
+        ]
+    },
+    "sons": {
+        name: "Sons e Quantidade",
+        words: [
+            ["声", "voz", "こえ"],
+            ["音", "som", "おと"],
+            ["半分", "metade", "はんぶん"],
+            ["全部", "tudo; totalidade", "ぜんぶ"],
+            ["度", "grau; vez", "ど"]
+        ]
+    },
+    "tarefas": {
+        name: "Tarefas Domésticas",
+        words: [
+            ["洗濯", "lavagem de roupas", "せんたく"],
+            ["掃除", "limpeza", "そうじ"]
+        ]
+    },
+    "cultural": {
+        name: "Lugares Culturais",
+        words: [
+            ["美術館", "museu de arte", "びじゅつかん"],
+            ["博物館", "museu", "はくぶつかん"]
+        ]
+    },
+    "midia": {
+        name: "Mídia e Entretenimento",
+        words: [
+            ["新聞", "jornal", "しんぶん"],
+            ["歌", "canção", "うた"],
+            ["歌う", "cantar", "うたう"],
+            ["テスト", "teste", "てすと"],
+            ["レコード", "disco; gravação", "れこーど"],
+            ["ストーブ", "aquecedor", "すとーぶ"],
+            ["エレベータ", "elevador", "えれべーた"],
+            ["マッチ", "fósforo", "まっち"]
+        ]
+    },
+    "estados": {
+        name: "Estados Sociais e Disponibilidade",
+        words: [
+            ["親切", "gentil; prestativo", "しんせつ"],
+            ["留守", "ausência; estar fora", "るす"]
+        ]
+    }
+};
+
+let currentCategory = 'all';
+let searchQuery = '';
+let studiedWords = new Set();
+
+function loadProgress() {
+    try {
+        const saved = localStorage.getItem('studiedWords');
+        if (saved) studiedWords = new Set(JSON.parse(saved));
+    } catch (e) { console.warn(e); }
+}
+
+function saveProgress() {
+    try {
+        localStorage.setItem('studiedWords', JSON.stringify([...studiedWords]));
+    } catch (e) { console.warn(e); }
+}
+
+function renderCategoryButtons() {
+    const container = document.getElementById('categoryButtons');
+    let html = '<button class="cat-btn active" onclick="selectCategory(\'all\', this)">Todas</button>';
+    Object.entries(vocabulary).forEach(([key, cat]) => {
+        html += `<button class="cat-btn" onclick="selectCategory('${key}', this)">${cat.name}</button>`;
+    });
+    container.innerHTML = html;
+}
+
+function selectCategory(cat, btn) {
+    currentCategory = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderContent();
+}
+
+function toggleStudied(word) {
+    if (studiedWords.has(word)) studiedWords.delete(word);
+    else studiedWords.add(word);
+    saveProgress();
+    renderContent();
+    updateStats();
+}
+
+function copyWord(word) {
+    navigator.clipboard.writeText(word).then(() => {
+        const toast = document.getElementById('toast');
+        toast.textContent = `「${word}」 copiado!`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    });
+}
+
+function updateStats() {
+    let total = 0;
+    Object.values(vocabulary).forEach(cat => total += cat.words.length);
+    
+    const studied = studiedWords.size;
+    const remaining = total - studied;
+    const percentage = total > 0 ? (studied / total) * 100 : 0;
+    
+    document.getElementById('totalWords').textContent = total;
+    document.getElementById('studiedWords').textContent = studied;
+    document.getElementById('remainingWords').textContent = remaining;
+    document.getElementById('categoriesCount').textContent = Object.keys(vocabulary).length;
+    
+    const percentText = percentage.toFixed(2) + '%';
+    document.getElementById('progressPercent').textContent = percentText;
+    document.getElementById('progressBar').style.width = percentText;
+}
+
+function renderContent() {
+    const container = document.getElementById('content');
+    let html = '';
+    
+    if (currentCategory === 'all') {
+        Object.entries(vocabulary).forEach(([key, cat]) => {
+            html += renderCategory(key, cat);
+        });
+    } else {
+        const cat = vocabulary[currentCategory];
+        html = renderCategory(currentCategory, cat);
+    }
+    
+    container.innerHTML = html;
+}
+
+function renderCategory(key, cat) {
+    const filteredWords = cat.words.filter(w => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return w[0].includes(q) || w[1].toLowerCase().includes(q) || w[2].includes(q);
+    });
+    
+    if (filteredWords.length === 0) return '';
+    
+    let html = `
+        <div class="category-section">
+            <h2 class="category-title">${cat.name}</h2>
+            <div class="words-grid">
+    `;
+    
+    filteredWords.forEach(w => {
+        const isStudied = studiedWords.has(w[0]);
+        html += `
+            <div class="word-card ${isStudied ? 'studied' : ''}">
+                <div class="word-kanji">${w[0]}</div>
+                <div class="word-hiragana">${w[2]}</div>
+                <div class="word-meaning">${w[1]}</div>
+                <div class="word-actions">
+                    <button class="btn-mark ${isStudied ? 'marked' : ''}" onclick="toggleStudied('${w[0]}')">
+                        ${isStudied ? '✓ Estudada' : 'Marcar'}
+                    </button>
+                    <button class="btn-copy" onclick="copyWord('${w[0]}')">📋</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div></div>';
+    return html;
+}
+
+// Exportação XLSX
+function exportFull() {
+    const wb = XLSX.utils.book_new();
+    const wsData = [['Categoria', 'Kanji', 'Hiragana', 'Significado', 'Estudada']];
+    
+    Object.entries(vocabulary).forEach(([key, cat]) => {
+        cat.words.forEach(w => {
+            wsData.push([cat.name, w[0], w[2], w[1], studiedWords.has(w[0]) ? 'Sim' : 'Não']);
+        });
+    });
+    
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    // Ajustar largura das colunas
+    ws['!cols'] = [
+        { wch: 25 },
+        { wch: 12 },
+        { wch: 18 },
+        { wch: 35 },
+        { wch: 10 }
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws, 'Vocabulário Completo');
+    XLSX.writeFile(wb, 'vocabulario_completo.xlsx');
+    
+    showToast('Tabela completa exportada!');
+}
+
+function exportStudied() {
+    const wb = XLSX.utils.book_new();
+    const wsData = [['Categoria', 'Kanji', 'Hiragana', 'Significado']];
+    
+    Object.entries(vocabulary).forEach(([key, cat]) => {
+        cat.words.forEach(w => {
+            if (studiedWords.has(w[0])) {
+                wsData.push([cat.name, w[0], w[2], w[1]]);
+            }
+        });
+    });
+    
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    ws['!cols'] = [
+        { wch: 25 },
+        { wch: 12 },
+        { wch: 18 },
+        { wch: 35 }
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws, 'Palavras Estudadas');
+    XLSX.writeFile(wb, 'palavras_estudadas.xlsx');
+    
+    showToast(`${studiedWords.size} palavras exportadas!`);
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    renderContent();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProgress();
+    renderCategoryButtons();
+    renderContent();
+    updateStats();
+});
+</script>
+
+</body>
+</html>

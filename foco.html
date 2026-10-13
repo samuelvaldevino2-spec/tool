@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dojo do Foco</title>
+<!-- SheetJS para exportação XLSX -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+/* ============================================
+   VARIÁVEIS — TEMA MAKIMA (VINHO/ROSA) vs REZE (ROXO)
+   Paleta suave, sóbria e profissional
+   ============================================ */
+:root {
+    /* Makima: Vermelho rosado, vinho, bordô suave */
+    --makima-primary: #9E4747; /* Rosa queimado / Vinho suave */
+    --makima-dark: #6B2D2D;    /* Bordô escuro */
+    --makima-light: #C47A7A;   /* Rosa antigo suave */
+    --makima-glow: rgba(158, 71, 71, 0.3);
+
+    /* Reze: Roxo lavanda, ametista suave */
+    --reze-primary: #7B68AE;   /* Roxo médio suave */
+    --reze-dark: #4B3F72;      /* Roxo escuro */
+    --reze-light: #9D8FD1;     /* Lavanda clara */
+    --reze-glow: rgba(123, 104, 174, 0.3);
+
+    /* Fundos escuros e neutros (Mais suaves que o preto puro) */
+    --bg-primary: #121214;
+    --bg-secondary: #1C1C1F;
+    --bg-tertiary: #242428;
+    --bg-card: #2A2A2E;
+    
+    /* Textos */
+    --text-primary: #EAEAEA;
+    --text-secondary: #A0A0A5;
+    --text-muted: #6B6B70;
+    
+    /* Bordas e Sombras */
+    --border: #333338;
+    --border-strong: #44444A;
+    --shadow: rgba(0, 0, 0, 0.5);
+    
+    /* Utilitários */
+    --success: #6B8E6B; /* Verde suave e dessaturado */
+    --warning: #C49A6C; /* Âmbar suave */
+    --danger: #A85252;  /* Vermelho suave para erros */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* Textura sutil de fundo */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 20% 30%, var(--makima-glow) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, var(--reze-glow) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ============================================
+   NAVEGAÇÃO
+   ============================================ */
+.nav {
+    background: var(--bg-secondary);
+    border-bottom: 2px solid var(--makima-dark);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav-brand {
+    font-size: 1.3rem;
+    color: var(--makima-light);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-brand::before {
+    content: '⚙';
+    color: var(--reze-primary);
+    font-size: 1.5rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-weight: 600;
+}
+
+.nav-link:hover {
+    color: var(--reze-light);
+    background: rgba(123, 104, 174, 0.1);
+}
+
+.nav-link.active {
+    color: var(--makima-light);
+    background: rgba(158, 71, 71, 0.15);
+    border-color: var(--makima-dark);
+}
+
+/* ============================================
+   CONTAINER PRINCIPAL
+   ============================================ */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.section {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--makima-primary);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    color: var(--reze-light);
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: var(--makima-primary);
+    display: inline-block;
+    border-radius: 2px;
+}
+
+/* ============================================
+   BOTÕES
+   ============================================ */
+.btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--makima-dark), var(--makima-primary));
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px var(--makima-glow);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--makima-glow);
+    background: linear-gradient(135deg, var(--makima-primary), var(--makima-light));
+}
+
+.btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+}
+
+.btn-secondary:hover {
+    background: var(--border);
+    border-color: var(--reze-primary);
+    color: var(--reze-light);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #8B3A3A;
+}
+
+.btn-large {
+    padding: 14px 28px;
+    font-size: 1.05rem;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* ============================================
+   FORMULÁRIOS
+   ============================================ */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--reze-primary);
+    background: var(--bg-card);
+}
+
+.form-textarea {
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.form-input::placeholder, .form-textarea::placeholder {
+    color: var(--text-muted);
+}
+
+/* ============================================
+   DASHBOARD GRID
+   ============================================ */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--makima-primary);
+    border-radius: 6px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--reze-light);
+    margin-bottom: 4px;
+    line-height: 1;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.greeting {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.date-display {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   MODO MONGE
+   ============================================ */
+.monge-mode {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-primary);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border: 4px solid var(--makima-dark);
+}
+
+.monge-mode.active {
+    display: flex;
+}
+
+.monge-counter-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--reze-dark);
+    color: var(--reze-light);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid var(--reze-primary);
+}
+
+.monge-task {
+    font-size: 1.3rem;
+    color: var(--makima-light);
+    margin-bottom: 8px;
+    text-align: center;
+    font-weight: 700;
+    max-width: 80%;
+}
+
+.monge-result {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    text-align: center;
+    font-style: italic;
+    max-width: 70%;
+}
+
+.monge-timer {
+    font-size: clamp(4rem, 12vw, 9rem);
+    font-weight: 900;
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+    margin-bottom: 10px;
+    text-shadow: 0 0 30px var(--makima-glow);
+    letter-spacing: 4px;
+}
+
+.monge-timer-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+.monge-progress {
+    width: 100%;
+    max-width: 500px;
+    height: 6px;
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.monge-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--makima-primary), var(--reze-primary));
+    transition: width 0.5s;
+    box-shadow: 0 0 10px var(--makima-glow);
+}
+
+.monge-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.monge-controls .btn {
+    min-width: 120px;
+    justify-content: center;
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border: 2px solid var(--makima-dark);
+    border-radius: 8px;
+    padding: 25px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+}
+
+.modal-title {
+    font-size: 1.3rem;
+    color: var(--reze-light);
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--makima-dark);
+    padding-bottom: 10px;
+}
+
+/* ============================================
+   CONTADORES
+   ============================================ */
+.counter-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.counter-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.counter-item:hover {
+    border-color: var(--reze-primary);
+    transform: translateY(-2px);
+}
+
+.counter-info {
+    flex: 1;
+}
+
+.counter-name {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.counter-time {
+    font-size: 0.85rem;
+    color: var(--reze-light);
+    font-weight: 600;
+}
+
+.counter-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.counter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.counter-btn:hover {
+    background: var(--reze-dark);
+    color: var(--reze-light);
+    border-color: var(--reze-primary);
+}
+
+.counter-btn.delete:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: white;
+}
+
+/* ============================================
+   ESCALAS
+   ============================================ */
+.scale-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.scale-option {
+    flex: 1;
+    padding: 10px 5px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.scale-option:hover {
+    border-color: var(--reze-primary);
+}
+
+.scale-option.selected {
+    border-color: var(--makima-primary);
+    background: rgba(158, 71, 71, 0.2);
+    color: var(--makima-light);
+}
+
+.scale-option small {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ============================================
+   CHECKLIST
+   ============================================ */
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.checklist-item:hover {
+    background: var(--border);
+}
+
+.checklist-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--makima-primary);
+}
+
+.checklist-item label {
+    cursor: pointer;
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   GRÁFICOS
+   ============================================ */
+.chart-container {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+}
+
+.chart-title {
+    color: var(--reze-light);
+    margin-bottom: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   HISTÓRICO DE SESSÕES
+   ============================================ */
+.session-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--makima-primary);
+    border-radius: 4px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+}
+
+.session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.session-task {
+    font-weight: 700;
+    color: var(--makima-light);
+    font-size: 1rem;
+}
+
+.session-time {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--reze-light);
+    font-family: 'Courier New', monospace;
+}
+
+.session-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.session-distractions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+.distraction-tag {
+    display: inline-block;
+    background: rgba(107, 45, 45, 0.3);
+    color: var(--makima-light);
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin: 2px;
+    font-size: 0.8rem;
+    border: 1px solid var(--makima-dark);
+}
+
+/* ============================================
+   RESPONSIVIDADE PARA TELA DIVIDIDA
+   ============================================ */
+@media (max-width: 700px) {
+    .nav { padding: 10px 15px; }
+    .nav-brand { font-size: 1.1rem; }
+    .nav-link { padding: 5px 8px; font-size: 0.8rem; }
+    .container { padding: 15px; }
+    .card { padding: 15px; }
+    .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stat-value { font-size: 1.5rem; }
+    .stat-label { font-size: 0.7rem; }
+    .counter-list { grid-template-columns: 1fr; }
+    .monge-timer { font-size: clamp(3rem, 10vw, 6rem); }
+    .monge-task { font-size: 1.1rem; }
+    .greeting { font-size: 1.2rem; }
+    .btn-large { padding: 12px 20px; font-size: 0.95rem; }
+    .scale-option { padding: 8px 3px; font-size: 0.8rem; }
+}
+
+@media (max-width: 450px) {
+    .nav-links { gap: 3px; }
+    .nav-link { padding: 4px 6px; font-size: 0.75rem; }
+    .dashboard-grid { grid-template-columns: 1fr 1fr; }
+    .monge-controls .btn { min-width: 100px; font-size: 0.85rem; padding: 8px 12px; }
+}
+
+/* ============================================
+   UTILITÁRIOS
+   ============================================ */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.mt-15 { margin-top: 15px; }
+.mb-15 { margin-bottom: 15px; }
+.flex-gap { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Scrollbar customizada */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--makima-dark); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--makima-primary); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-brand">Dojo do Foco</div>
+    <div class="nav-links">
+        <button class="nav-link active" onclick="showSection('dashboard')">Centro</button>
+        <button class="nav-link" onclick="showSection('counters')">Contadores</button>
+        <button class="nav-link" onclick="showSection('stats')">Estatísticas</button>
+        <button class="nav-link" onclick="showSection('history')">Histórico</button>
+        <button class="nav-link" onclick="showSection('settings')">Config</button>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- CENTRO DE COMANDO -->
+    <section id="dashboard" class="section active">
+        <div class="greeting" id="greeting">Bem-vindo ao Dojo</div>
+        <div class="date-display" id="dateDisplay"></div>
+
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="todayFocus">0h00</div>
+                <div class="stat-label">Foco hoje</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="dailyGoal">30min</div>
+                <div class="stat-label">Meta diária</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="longestSession">0h00</div>
+                <div class="stat-label">Maior sessão</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="interruptions">0</div>
+                <div class="stat-label">Interrupções hoje</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Tarefa Principal do Dia</div>
+            <div class="form-group">
+                <input type="text" class="form-input" id="mainTask" placeholder="Qual é a tarefa mais importante de hoje?">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-input" id="mainResult" placeholder="Qual resultado concreto você quer alcançar?">
+            </div>
+            <button class="btn btn-primary" onclick="saveDailyTask()">Salvar</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Iniciar Treinamento</div>
+            <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: 0.9rem;">
+                Selecione um contador e defina a duração da sessão.
+            </p>
+            <div class="form-group">
+                <label class="form-label">Contador</label>
+                <select class="form-select" id="counterSelect"></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Duração (minutos) — até 720 (12h)</label>
+                <input type="number" class="form-input" id="sessionDuration" min="1" max="720" value="25" placeholder="Ex: 25, 60, 180, 720">
+            </div>
+            <div class="flex-gap">
+                <button class="btn btn-primary btn-large" onclick="startPreparation()">Iniciar Sessão</button>
+                <button class="btn btn-secondary btn-large" id="resumeBtn" onclick="resumeSession()" style="display:none;">Retomar</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Últimos 7 Dias</div>
+            <div id="weekHistory"></div>
+        </div>
+    </section>
+
+    <!-- CONTADORES -->
+    <section id="counters" class="section">
+        <div class="card">
+            <div class="card-title">Meus Contadores</div>
+            <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: 0.9rem;">
+                Crie contadores para diferentes áreas da sua vida. Cada um acumula o tempo dedicado separadamente.
+            </p>
+            <div class="flex-gap" style="margin-bottom: 15px;">
+                <input type="text" class="form-input" id="newCounterName" placeholder="Nome do contador (ex: Escola, Trabalho, Japonês)" style="flex: 1; min-width: 200px;">
+                <button class="btn btn-primary" onclick="addCounter()">Criar Contador</button>
+            </div>
+            <div class="counter-list" id="counterList"></div>
+        </div>
+    </section>
+
+    <!-- PREPARAÇÃO PRÉ-SESSÃO -->
+    <section id="preparation" class="section">
+        <div class="card">
+            <div class="card-title">Preparação da Sessão</div>
+            
+            <div class="form-group">
+                <label class="form-label">Contador</label>
+                <select class="form-select" id="prepCounter"></select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Qual tarefa específica será executada?</label>
+                <input type="text" class="form-input" id="prepTask">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Qual é o próximo resultado observável?</label>
+                <input type="text" class="form-input" id="prepResult">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nível de energia (1-5)</label>
+                <div class="scale-container" id="energyScale">
+                    <div class="scale-option" data-value="1">1<small>Muito baixo</small></div>
+                    <div class="scale-option" data-value="2">2<small>Baixo</small></div>
+                    <div class="scale-option" data-value="3">3<small>Médio</small></div>
+                    <div class="scale-option" data-value="4">4<small>Alto</small></div>
+                    <div class="scale-option" data-value="5">5<small>Muito alto</small></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Vontade de trabalhar (1-5)</label>
+                <div class="scale-container" id="motivationScale">
+                    <div class="scale-option" data-value="1">1<small>Nenhuma</small></div>
+                    <div class="scale-option" data-value="2">2<small>Pouca</small></div>
+                    <div class="scale-option" data-value="3">3<small>Moderada</small></div>
+                    <div class="scale-option" data-value="4">4<small>Alta</small></div>
+                    <div class="scale-option" data-value="5">5<small>Muito alta</small></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Duração pretendida (minutos)</label>
+                <input type="number" class="form-input" id="prepDuration" min="1" max="720" value="25">
+                <small style="color: var(--text-muted); font-size: 0.8rem;">Máximo: 720 minutos (12 horas)</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Checklist de Preparação</label>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check1">
+                    <label for="check1">Material necessário aberto</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check2">
+                    <label for="check2">Celular afastado ou em modo silencioso</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check3">
+                    <label for="check3">Abas e programas desnecessários fechados</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check4">
+                    <label for="check4">Água disponível</label>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" id="check5">
+                    <label for="check5">Próxima ação claramente definida</label>
+                </div>
+            </div>
+
+            <div class="flex-gap">
+                <button class="btn btn-primary btn-large" onclick="startSession()">Entrar no Dojo</button>
+                <button class="btn btn-secondary" onclick="showSection('dashboard')">Cancelar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODO MONGE -->
+    <div class="monge-mode" id="mongeMode">
+        <div class="monge-counter-badge" id="mongeCounterBadge">Contador</div>
+        <div class="monge-task" id="mongeTask"></div>
+        <div class="monge-result" id="mongeResult"></div>
+        
+        <div class="monge-progress">
+            <div class="monge-progress-bar" id="mongeProgress"></div>
+        </div>
+
+        <div class="monge-timer" id="mongeTimer">00:00</div>
+        <div class="monge-timer-label" id="mongeTimerLabel">Tempo decorrido</div>
+
+        <div class="monge-controls">
+            <button class="btn btn-secondary" onclick="registerDistraction()"> Distração</button>
+            <button class="btn btn-secondary" onclick="pauseSession()"> Pausar</button>
+            <button class="btn btn-primary" onclick="completeSession()">✓ Concluir</button>
+            <button class="btn btn-danger" onclick="abandonSession()">✕ Abandonar</button>
+        </div>
+    </div>
+
+    <!-- ESTATÍSTICAS -->
+    <section id="stats" class="section">
+        <div class="card">
+            <div class="card-title">Estatísticas Gerais</div>
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSessions">0</div>
+                    <div class="stat-label">Sessões totais</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalFocus">0h00</div>
+                    <div class="stat-label">Tempo total de foco</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgSession">0min</div>
+                    <div class="stat-label">Duração média</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completionRate">0%</div>
+                    <div class="stat-label">Taxa de conclusão</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Foco por Dia (Últimos 7 dias)</div>
+            <div class="chart-container">
+                <svg id="weekChart" width="100%" height="200"></svg>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Tempo por Contador</div>
+            <div id="counterDistribution"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">O que está prejudicando meu foco?</div>
+            <div id="distractionAnalysis"></div>
+        </div>
+    </section>
+
+    <!-- HISTÓRICO -->
+    <section id="history" class="section">
+        <div class="card">
+            <div class="card-title">Histórico de Sessões</div>
+            <div id="sessionHistory"></div>
+        </div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section id="settings" class="section">
+        <div class="card">
+            <div class="card-title">Configurações Gerais</div>
+            <div class="form-group">
+                <label class="form-label">Meta diária (minutos)</label>
+                <input type="number" class="form-input" id="settingDailyGoal" value="30" min="1" max="720">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Duração das pausas (minutos)</label>
+                <input type="number" class="form-input" id="settingBreakDuration" value="5" min="1" max="60">
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">Salvar Configurações</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Exportação e Backup</div>
+            <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: 0.9rem;">
+                Exporte seus dados para análise externa ou backup.
+            </p>
+            <div class="flex-gap">
+                <button class="btn btn-secondary" onclick="exportJSON()">Exportar JSON</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Importar JSON</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                <button class="btn btn-primary" onclick="exportXLSX()">Exportar XLSX</button>
+                <button class="btn btn-danger" onclick="clearAllData()">Apagar Tudo</button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- MODAL DE DISTRAÇÃO -->
+<div class="modal" id="distractionModal">
+    <div class="modal-content">
+        <div class="modal-title">Registrar Distração</div>
+        <div class="form-group">
+            <label class="form-label">Tipo de distração</label>
+            <select class="form-select" id="distractionType">
+                <option value="Celular ou redes sociais">Celular ou redes sociais</option>
+                <option value="Pensamentos aleatórios">Pensamentos aleatórios</option>
+                <option value="Cansaço ou sonolência">Cansaço ou sonolência</option>
+                <option value="Vontade de trocar de tarefa">Vontade de trocar de tarefa</option>
+                <option value="Dificuldade de entender o conteúdo">Dificuldade de entender o conteúdo</option>
+                <option value="Fome ou sede">Fome ou sede</option>
+                <option value="Interrupção externa">Interrupção externa</option>
+                <option value="Outro">Outro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Descrição (opcional)</label>
+            <textarea class="form-textarea" id="distractionDesc" placeholder="Descreva o que aconteceu. Ex: 'Peguei o celular para ver mensagem do grupo'"></textarea>
+        </div>
+        <div class="flex-gap">
+            <button class="btn btn-primary" onclick="confirmDistraction()">Registrar</button>
+            <button class="btn btn-secondary" onclick="closeModal('distractionModal')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMAÇÃO -->
+<div class="modal" id="confirmModal">
+    <div class="modal-content">
+        <div class="modal-title" id="confirmTitle">Confirmar</div>
+        <p id="confirmMessage" style="margin-bottom: 20px; color: var(--text-secondary);"></p>
+        <div id="confirmButtons" class="flex-gap"></div>
+    </div>
+</div>
+
+<script>
+/* ============================================
+   ESTADO GLOBAL
+   ============================================ */
+const state = {
+    currentSection: 'dashboard',
+    session: null,
+    sessions: [],
+    counters: [
+        { id: 'default', name: 'Geral', totalTime: 0 }
+    ],
+    settings: {
+        dailyGoal: 30,
+        breakDuration: 5
+    },
+    dailyTask: { task: '', result: '' }
+};
+
+/* ============================================
+   UTILITÁRIOS DE TEMPO
+   ============================================ */
+function formatTime(minutes) {
+    if (minutes < 60) return `${Math.round(minutes)}min`;
+    const h = Math.floor(minutes / 60);
+    const m = Math.round(minutes % 60);
+    if (m === 0) return `${h}h`;
+    return `${h}h${String(m).padStart(2, '0')}min`;
+}
+
+function formatTimer(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) {
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+/* ============================================
+   PERSISTÊNCIA
+   ============================================ */
+function saveState() {
+    try {
+        localStorage.setItem('dojoFocoCSM', JSON.stringify(state));
+    } catch (e) {
+        console.error('Erro ao salvar:', e);
+    }
+}
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem('dojoFocoCSM');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            Object.assign(state, parsed);
+        }
+    } catch (e) {
+        console.error('Erro ao carregar:', e);
+    }
+}
+
+/* ============================================
+   NAVEGAÇÃO
+   ============================================ */
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.classList.add('active');
+    }
+    
+    document.querySelectorAll('.nav-link').forEach(btn => {
+        if (btn.getAttribute('onclick')?.includes(sectionId)) {
+            btn.classList.add('active');
+        }
+    });
+    
+    state.currentSection = sectionId;
+    
+    if (sectionId === 'dashboard') updateDashboard();
+    if (sectionId === 'counters') updateCounters();
+    if (sectionId === 'stats') updateStats();
+    if (sectionId === 'history') updateHistory();
+}
+
+/* ============================================
+   CONTADORES
+   ============================================ */
+function addCounter() {
+    const name = document.getElementById('newCounterName').value.trim();
+    if (!name) {
+        alert('Digite um nome para o contador.');
+        return;
+    }
+    if (state.counters.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+        alert('Já existe um contador com esse nome.');
+        return;
+    }
+    state.counters.push({
+        id: 'counter_' + Date.now(),
+        name,
+        totalTime: 0
+    });
+    document.getElementById('newCounterName').value = '';
+    saveState();
+    updateCounters();
+    updateCounterSelects();
+}
+
+function deleteCounter(id) {
+    if (state.counters.length <= 1) {
+        alert('Você precisa ter pelo menos um contador.');
+        return;
+    }
+    if (confirm('Deseja realmente excluir este contador? O tempo acumulado será perdido.')) {
+        state.counters = state.counters.filter(c => c.id !== id);
+        saveState();
+        updateCounters();
+        updateCounterSelects();
+    }
+}
+
+function updateCounters() {
+    const list = document.getElementById('counterList');
+    if (state.counters.length === 0) {
+        list.innerHTML = '<p style="color: var(--text-muted);">Nenhum contador criado.</p>';
+        return;
+    }
+    list.innerHTML = state.counters.map(c => `
+        <div class="counter-item">
+            <div class="counter-info">
+                <div class="counter-name">${c.name}</div>
+                <div class="counter-time">${formatTime(c.totalTime)}</div>
+            </div>
+            <div class="counter-actions">
+                <button class="counter-btn delete" onclick="deleteCounter('${c.id}')" title="Excluir">×</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateCounterSelects() {
+    const selects = ['counterSelect', 'prepCounter'];
+    selects.forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        select.innerHTML = state.counters.map(c => 
+            `<option value="${c.id}">${c.name}</option>`
+        ).join('');
+    });
+}
+
+/* ============================================
+   DASHBOARD
+   ============================================ */
+function updateDashboard() {
+    const now = new Date();
+    const greeting = getGreeting();
+    document.getElementById('greeting').textContent = greeting;
+    document.getElementById('dateDisplay').textContent = formatDate(now);
+    
+    const todayMinutes = getTodayFocus();
+    document.getElementById('todayFocus').textContent = formatTime(todayMinutes);
+    document.getElementById('dailyGoal').textContent = formatTime(state.settings.dailyGoal);
+    document.getElementById('longestSession').textContent = formatTime(getLongestSession());
+    document.getElementById('interruptions').textContent = getTodayInterruptions();
+    
+    document.getElementById('mainTask').value = state.dailyTask.task;
+    document.getElementById('mainResult').value = state.dailyTask.result;
+    
+    updateCounterSelects();
+    updateWeekHistory();
+    
+    if (state.session && state.session.status === 'paused') {
+        document.getElementById('resumeBtn').style.display = 'inline-flex';
+    } else {
+        document.getElementById('resumeBtn').style.display = 'none';
+    }
+}
+
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bom dia, caçador de foco.';
+    if (hour < 18) return 'Boa tarde, caçador de foco.';
+    return 'Boa noite, caçador de foco.';
+}
+
+function formatDate(date) {
+    return date.toLocaleDateString('pt-BR', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+}
+
+function getTodayFocus() {
+    const today = new Date().toDateString();
+    return state.sessions
+        .filter(s => new Date(s.startTime).toDateString() === today && s.status === 'completed')
+        .reduce((sum, s) => sum + s.focusTime, 0);
+}
+
+function getLongestSession() {
+    if (state.sessions.length === 0) return 0;
+    return Math.max(...state.sessions.filter(s => s.status === 'completed').map(s => s.focusTime), 0);
+}
+
+function getTodayInterruptions() {
+    const today = new Date().toDateString();
+    return state.sessions
+        .filter(s => new Date(s.startTime).toDateString() === today)
+        .reduce((sum, s) => sum + (s.distractions || []).length, 0);
+}
+
+function updateWeekHistory() {
+    const container = document.getElementById('weekHistory');
+    const days = [];
+    
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dayMinutes = state.sessions
+            .filter(s => new Date(s.startTime).toDateString() === date.toDateString() && s.status === 'completed')
+            .reduce((sum, s) => sum + s.focusTime, 0);
+        days.push({ date: date.toLocaleDateString('pt-BR', { weekday: 'short' }), minutes: dayMinutes });
+    }
+    
+    container.innerHTML = days.map(d => `
+        <div style="display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--border);">
+            <span style="text-transform: capitalize;">${d.date}</span>
+            <span style="color: var(--reze-light); font-weight: 700;">${formatTime(d.minutes)}</span>
+        </div>
+    `).join('');
+}
+
+function saveDailyTask() {
+    state.dailyTask = {
+        task: document.getElementById('mainTask').value,
+        result: document.getElementById('mainResult').value
+    };
+    saveState();
+    alert('Tarefa do dia salva!');
+}
+
+/* ============================================
+   PREPARAÇÃO
+   ============================================ */
+function startPreparation() {
+    const counterId = document.getElementById('counterSelect').value;
+    const duration = parseInt(document.getElementById('sessionDuration').value);
+    
+    if (!counterId) {
+        alert('Crie pelo menos um contador antes de iniciar.');
+        return;
+    }
+    if (!duration || duration < 1 || duration > 720) {
+        alert('Duração deve ser entre 1 e 720 minutos.');
+        return;
+    }
+    
+    document.getElementById('prepCounter').value = counterId;
+    document.getElementById('prepDuration').value = duration;
+    document.getElementById('prepTask').value = state.dailyTask.task;
+    document.getElementById('prepResult').value = state.dailyTask.result;
+    
+    document.querySelectorAll('.scale-option').forEach(o => o.classList.remove('selected'));
+    
+    showSection('preparation');
+    
+    document.querySelectorAll('.scale-option').forEach(opt => {
+        opt.onclick = function() {
+            this.parentElement.querySelectorAll('.scale-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+        };
+    });
+}
+
+/* ============================================
+   SESSÃO DE FOCO
+   ============================================ */
+function startSession() {
+    const counterId = document.getElementById('prepCounter').value;
+    const counter = state.counters.find(c => c.id === counterId);
+    const task = document.getElementById('prepTask').value;
+    const result = document.getElementById('prepResult').value;
+    const energy = document.querySelector('#energyScale .selected')?.dataset.value || 3;
+    const motivation = document.querySelector('#motivationScale .selected')?.dataset.value || 3;
+    const duration = parseInt(document.getElementById('prepDuration').value);
+    
+    if (!task) {
+        alert('Por favor, defina a tarefa.');
+        return;
+    }
+    if (!duration || duration < 1 || duration > 720) {
+        alert('Duração deve ser entre 1 e 720 minutos.');
+        return;
+    }
+    
+    state.session = {
+        id: Date.now(),
+        counterId,
+        counterName: counter ? counter.name : 'Geral',
+        task,
+        result,
+        energy: parseInt(energy),
+        motivation: parseInt(motivation),
+        plannedDuration: duration * 60,
+        startTime: Date.now(),
+        focusTime: 0,
+        pauseTime: 0,
+        distractions: [],
+        status: 'active'
+    };
+    
+    saveState();
+    enterMongeMode();
+}
+
+function enterMongeMode() {
+    document.getElementById('mongeTask').textContent = state.session.task;
+    document.getElementById('mongeResult').textContent = state.session.result || 'Sem resultado definido';
+    document.getElementById('mongeCounterBadge').textContent = state.session.counterName;
+    document.getElementById('mongeMode').classList.add('active');
+    
+    updateMongeTimer();
+    if (state.mongeInterval) clearInterval(state.mongeInterval);
+    state.mongeInterval = setInterval(updateMongeTimer, 1000);
+}
+
+function updateMongeTimer() {
+    if (!state.session) return;
+    
+    const now = Date.now();
+    const elapsed = Math.floor((now - state.session.startTime - state.session.pauseTime) / 1000);
+    const remaining = state.session.plannedDuration - elapsed;
+    
+    document.getElementById('mongeTimer').textContent = formatTimer(Math.max(0, elapsed));
+    
+    const progress = (elapsed / state.session.plannedDuration) * 100;
+    document.getElementById('mongeProgress').style.width = `${Math.min(progress, 100)}%`;
+    
+    if (remaining > 0) {
+        document.getElementById('mongeTimerLabel').textContent = `Tempo restante: ${formatTimer(remaining)}`;
+    } else {
+        document.getElementById('mongeTimerLabel').textContent = 'Meta atingida — continue ou conclua';
+    }
+}
+
+function pauseSession() {
+    if (!state.session) return;
+    
+    state.session.status = 'paused';
+    state.session.pauseStart = Date.now();
+    saveState();
+    
+    if (state.mongeInterval) clearInterval(state.mongeInterval);
+    document.getElementById('mongeMode').classList.remove('active');
+    
+    showConfirm(
+        'Sessão Pausada',
+        'Estou interrompendo porque preciso ou porque quero escapar do desconforto?',
+        [
+            { text: 'Continuar +5min', action: () => resumeForFiveMinutes() },
+            { text: 'Pausa consciente', action: () => takeBreak() },
+            { text: 'Encerrar sessão', action: () => completeSession() }
+        ]
+    );
+}
+
+function resumeForFiveMinutes() {
+    state.session.plannedDuration += 5 * 60;
+    state.session.status = 'active';
+    state.session.pauseTime += Date.now() - state.session.pauseStart;
+    saveState();
+    enterMongeMode();
+}
+
+function takeBreak() {
+    state.session.status = 'paused';
+    saveState();
+    document.getElementById('mongeMode').classList.remove('active');
+    alert('Faça uma pausa. Beba água, alongue-se, respire.');
+    setTimeout(() => {
+        if (confirm('Pronto para continuar?')) {
+            state.session.status = 'active';
+            state.session.pauseTime += Date.now() - state.session.pauseStart;
+            saveState();
+            enterMongeMode();
+        }
+    }, 3000);
+}
+
+function completeSession() {
+    if (!state.session) return;
+    
+    if (state.mongeInterval) clearInterval(state.mongeInterval);
+    
+    const now = Date.now();
+    state.session.endTime = now;
+    state.session.status = 'completed';
+    
+    const focusSeconds = Math.floor((now - state.session.startTime - state.session.pauseTime) / 1000);
+    state.session.focusTime = Math.round(focusSeconds / 60 * 10) / 10;
+    
+    const counter = state.counters.find(c => c.id === state.session.counterId);
+    if (counter) {
+        counter.totalTime = (counter.totalTime || 0) + state.session.focusTime;
+    }
+    
+    state.sessions.push(state.session);
+    state.session = null;
+    saveState();
+    
+    document.getElementById('mongeMode').classList.remove('active');
+    
+    showSection('dashboard');
+    alert(`Sessão concluída! Você focou por ${formatTime(state.sessions[state.sessions.length - 1].focusTime)}.`);
+}
+
+function abandonSession() {
+    showConfirm(
+        'Abandonar Sessão',
+        'Tem certeza que deseja abandonar esta sessão? O tempo não será contabilizado.',
+        [
+            { text: 'Sim, abandonar', action: () => {
+                if (state.mongeInterval) clearInterval(state.mongeInterval);
+                state.session = null;
+                saveState();
+                document.getElementById('mongeMode').classList.remove('active');
+                showSection('dashboard');
+            }},
+            { text: 'Cancelar', action: () => {} }
+        ]
+    );
+}
+
+function resumeSession() {
+    if (state.session && state.session.status === 'paused') {
+        state.session.status = 'active';
+        state.session.pauseTime += Date.now() - state.session.pauseStart;
+        saveState();
+        enterMongeMode();
+    }
+}
+
+/* ============================================
+   DISTRAÇÕES
+   ============================================ */
+function registerDistraction() {
+    document.getElementById('distractionType').value = 'Celular ou redes sociais';
+    document.getElementById('distractionDesc').value = '';
+    document.getElementById('distractionModal').classList.add('active');
+}
+
+function confirmDistraction() {
+    const type = document.getElementById('distractionType').value;
+    const desc = document.getElementById('distractionDesc').value.trim();
+    
+    if (state.session) {
+        state.session.distractions.push({
+            type,
+            description: desc,
+            time: Date.now()
+        });
+        saveState();
+    }
+    closeModal('distractionModal');
+}
+
+/* ============================================
+   MODAIS
+   ============================================ */
+function showConfirm(title, message, buttons) {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMessage').textContent = message;
+    
+    const buttonsContainer = document.getElementById('confirmButtons');
+    buttonsContainer.innerHTML = buttons.map((btn, i) => 
+        `<button class="btn ${i === 0 ? 'btn-primary' : 'btn-secondary'}" onclick="executeConfirmAction(${i})">${btn.text}</button>`
+    ).join('');
+    
+    window.confirmActions = buttons;
+    document.getElementById('confirmModal').classList.add('active');
+}
+
+function executeConfirmAction(index) {
+    if (window.confirmActions && window.confirmActions[index]) {
+        window.confirmActions[index].action();
+    }
+    closeModal('confirmModal');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+}
+
+/* ============================================
+   ESTATÍSTICAS
+   ============================================ */
+function updateStats() {
+    const completed = state.sessions.filter(s => s.status === 'completed');
+    
+    document.getElementById('totalSessions').textContent = completed.length;
+    document.getElementById('totalFocus').textContent = formatTime(completed.reduce((sum, s) => sum + s.focusTime, 0));
+    
+    const avg = completed.length > 0 ? 
+        completed.reduce((sum, s) => sum + s.focusTime, 0) / completed.length : 0;
+    document.getElementById('avgSession').textContent = formatTime(avg);
+    
+    document.getElementById('completionRate').textContent = state.sessions.length > 0 ? 
+        Math.round((completed.length / state.sessions.length) * 100) + '%' : '0%';
+    
+    drawWeekChart();
+    updateCounterDistribution();
+    updateDistractionAnalysis();
+}
+
+function drawWeekChart() {
+    const svg = document.getElementById('weekChart');
+    const days = [];
+    
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dayMinutes = state.sessions
+            .filter(s => new Date(s.startTime).toDateString() === date.toDateString() && s.status === 'completed')
+            .reduce((sum, s) => sum + s.focusTime, 0);
+        days.push({ date: date.toLocaleDateString('pt-BR', { weekday: 'short' }), minutes: dayMinutes });
+    }
+    
+    const maxMinutes = Math.max(...days.map(d => d.minutes), 1);
+    const barWidth = 50;
+    const barGap = 15;
+    const chartHeight = 160;
+    const svgWidth = days.length * (barWidth + barGap) + 40;
+    
+    svg.setAttribute('width', svgWidth);
+    svg.setAttribute('height', chartHeight + 40);
+    
+    svg.innerHTML = days.map((d, i) => {
+        const barHeight = (d.minutes / maxMinutes) * chartHeight;
+        const x = i * (barWidth + barGap) + 20;
+        const y = chartHeight - barHeight;
+        return `
+            <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${d.minutes > 0 ? 'var(--reze-primary)' : 'var(--border)'}" rx="3"/>
+            <text x="${x + barWidth/2}" y="${chartHeight + 18}" text-anchor="middle" fill="var(--text-secondary)" font-size="11" font-weight="600">${d.date}</text>
+            <text x="${x + barWidth/2}" y="${y - 5}" text-anchor="middle" fill="var(--reze-light)" font-size="11" font-weight="700">${formatTime(d.minutes)}</text>
+        `;
+    }).join('');
+}
+
+function updateCounterDistribution() {
+    const container = document.getElementById('counterDistribution');
+    const counters = state.counters.map(c => ({
+        name: c.name,
+        time: c.totalTime || 0
+    })).filter(c => c.time > 0).sort((a, b) => b.time - a.time);
+    
+    if (counters.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted);">Nenhum tempo registrado ainda.</p>';
+        return;
+    }
+    
+    container.innerHTML = counters.map(c => `
+        <div style="display: flex; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--border);">
+            <span style="font-weight: 600;">${c.name}</span>
+            <span style="color: var(--reze-light); font-weight: 700;">${formatTime(c.time)}</span>
+        </div>
+    `).join('');
+}
+
+function updateDistractionAnalysis() {
+    const distractions = {};
+    state.sessions.forEach(s => {
+        (s.distractions || []).forEach(d => {
+            distractions[d.type] = (distractions[d.type] || 0) + 1;
+        });
+    });
+    
+    const container = document.getElementById('distractionAnalysis');
+    if (Object.keys(distractions).length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma distração registrada ainda.</p>';
+        return;
+    }
+    
+    container.innerHTML = Object.entries(distractions)
+        .sort((a, b) => b[1] - a[1])
+        .map(([type, count]) => `
+            <div style="display: flex; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid var(--border);">
+                <span>${type}</span>
+                <span style="color: var(--makima-light); font-weight: 700;">${count}x</span>
+            </div>
+        `).join('');
+}
+
+/* ============================================
+   HISTÓRICO
+   ============================================ */
+function updateHistory() {
+    const container = document.getElementById('sessionHistory');
+    
+    if (state.sessions.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted);">Nenhuma sessão registrada ainda.</p>';
+        return;
+    }
+    
+    container.innerHTML = state.sessions
+        .sort((a, b) => b.startTime - a.startTime)
+        .map(s => `
+            <div class="session-item">
+                <div class="session-header">
+                    <div>
+                        <div class="session-task">${s.task}</div>
+                        <div class="session-meta">${new Date(s.startTime).toLocaleString('pt-BR')} · ${s.counterName}</div>
+                    </div>
+                    <div class="session-time">${formatTime(s.focusTime)}</div>
+                </div>
+                ${s.result ? `<div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;"><strong>Resultado:</strong> ${s.result}</div>` : ''}
+                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                    Energia: ${s.energy}/5 · Motivação: ${s.motivation}/5 · Status: ${s.status === 'completed' ? '✓ Concluída' : ' Interrompida'}
+                </div>
+                ${s.distractions && s.distractions.length > 0 ? `
+                    <div class="session-distractions">
+                        <strong style="color: var(--reze-primary); font-size: 0.85rem;">Distrações (${s.distractions.length}):</strong>
+                        ${s.distractions.map(d => `
+                            <div class="distraction-tag" title="${d.description || ''}">
+                                ${d.type}${d.description ? ': ' + d.description : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+}
+
+/* ============================================
+   CONFIGURAÇÕES
+   ============================================ */
+function saveSettings() {
+    state.settings.dailyGoal = parseInt(document.getElementById('settingDailyGoal').value) || 30;
+    state.settings.breakDuration = parseInt(document.getElementById('settingBreakDuration').value) || 5;
+    saveState();
+    alert('Configurações salvas!');
+}
+
+function exportJSON() {
+    const dataStr = JSON.stringify(state, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dojo_foco_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (imported.sessions && imported.settings) {
+                Object.assign(state, imported);
+                saveState();
+                alert('Dados importados com sucesso!');
+                location.reload();
+            } else {
+                alert('Arquivo inválido.');
+            }
+        } catch (err) {
+            alert('Erro ao importar: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function exportXLSX() {
+    try {
+        const wb = XLSX.utils.book_new();
+        
+        const sessionsData = state.sessions.map(s => ({
+            'Data': new Date(s.startTime).toLocaleString('pt-BR'),
+            'Contador': s.counterName,
+            'Tarefa': s.task,
+            'Resultado': s.result || '',
+            'Duração (min)': s.focusTime,
+            'Status': s.status === 'completed' ? 'Concluída' : 'Interrompida',
+            'Energia (1-5)': s.energy,
+            'Motivação (1-5)': s.motivation,
+            'Distrações': (s.distractions || []).length,
+            'Tipos de Distração': (s.distractions || []).map(d => d.type).join('; '),
+            'Descrições de Distração': (s.distractions || []).map(d => d.description || '').filter(d => d).join('; ')
+        }));
+        
+        const wsSessions = XLSX.utils.json_to_sheet(sessionsData);
+        XLSX.utils.book_append_sheet(wb, wsSessions, 'Sessões');
+        
+        const countersData = state.counters.map(c => ({
+            'Nome': c.name,
+            'Tempo Total (min)': c.totalTime || 0,
+            'Tempo Formatado': formatTime(c.totalTime || 0)
+        }));
+        const wsCounters = XLSX.utils.json_to_sheet(countersData);
+        XLSX.utils.book_append_sheet(wb, wsCounters, 'Contadores');
+        
+        const distractionsData = [];
+        state.sessions.forEach(s => {
+            (s.distractions || []).forEach(d => {
+                distractionsData.push({
+                    'Data': new Date(d.time).toLocaleString('pt-BR'),
+                    'Tarefa': s.task,
+                    'Contador': s.counterName,
+                    'Tipo': d.type,
+                    'Descrição': d.description || ''
+                });
+            });
+        });
+        if (distractionsData.length > 0) {
+            const wsDistractions = XLSX.utils.json_to_sheet(distractionsData);
+            XLSX.utils.book_append_sheet(wb, wsDistractions, 'Distrações');
+        }
+        
+        const completed = state.sessions.filter(s => s.status === 'completed');
+        const summaryData = [
+            { 'Métrica': 'Total de sessões', 'Valor': state.sessions.length },
+            { 'Métrica': 'Sessões concluídas', 'Valor': completed.length },
+            { 'Métrica': 'Taxa de conclusão', 'Valor': state.sessions.length > 0 ? Math.round((completed.length / state.sessions.length) * 100) + '%' : '0%' },
+            { 'Métrica': 'Tempo total de foco', 'Valor': formatTime(completed.reduce((sum, s) => sum + s.focusTime, 0)) },
+            { 'Métrica': 'Duração média', 'Valor': completed.length > 0 ? formatTime(completed.reduce((sum, s) => sum + s.focusTime, 0) / completed.length) : '0min' },
+            { 'Métrica': 'Maior sessão', 'Valor': formatTime(getLongestSession()) },
+            { 'Métrica': 'Total de distrações', 'Valor': state.sessions.reduce((sum, s) => sum + (s.distractions || []).length, 0) }
+        ];
+        const wsSummary = XLSX.utils.json_to_sheet(summaryData);
+        XLSX.utils.book_append_sheet(wb, wsSummary, 'Resumo');
+        
+        XLSX.writeFile(wb, `dojo_foco_${new Date().toISOString().split('T')[0]}.xlsx`);
+        alert('Arquivo XLSX exportado com sucesso!');
+    } catch (err) {
+        alert('Erro ao exportar XLSX: ' + err.message);
+    }
+}
+
+function clearAllData() {
+    if (confirm('Tem certeza que deseja apagar TODOS os dados? Esta ação não pode ser desfeita.')) {
+        if (confirm('Última confirmação: todos os contadores, sessões e configurações serão perdidos.')) {
+            localStorage.removeItem('dojoFocoCSM');
+            location.reload();
+        }
+    }
+}
+
+/* ============================================
+   INICIALIZAÇÃO
+   ============================================ */
+document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    updateDashboard();
+    updateCounters();
+    updateCounterSelects();
+    
+    document.getElementById('settingDailyGoal').value = state.settings.dailyGoal;
+    document.getElementById('settingBreakDuration').value = state.settings.breakDuration;
+});
+
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+});
+
+document.addEventListener('keydown', (e) => {
+    if (state.session && state.session.status === 'active') {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            pauseSession();
+        }
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waku Waku Vocabulary | Spy x Family Theme</title>
+    <!-- Fontes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    <!-- PDF.js para ler PDFs localmente -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <style>
+        :root {
+            /* Paleta Spy x Family */
+            --anya-pink: #FF9EBB;
+            --anya-pink-dark: #FF6B9D;
+            --loid-blue: #2C3E50;
+            --loid-blue-light: #34495E;
+            --yor-black: #1A1A1A;
+            --bond-white: #F5F5F5;
+            --spy-turquoise: #40E0D0;
+            --spy-turquoise-dark: #20B2AA;
+            --accent-yellow: #FFD700;
+            --bg-dark: #0F172A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 158, 187, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(64, 224, 208, 0.1) 0%, transparent 20%);
+            color: var(--bond-white);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            border-bottom: 3px solid var(--anya-pink);
+            position: relative;
+        }
+
+        header h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 3rem;
+            color: var(--anya-pink);
+            text-shadow: 3px 3px 0px var(--loid-blue);
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: var(--spy-turquoise);
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .anya-quote {
+            font-style: italic;
+            color: var(--accent-yellow);
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Search Box */
+        .search-section {
+            background: rgba(44, 62, 80, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--spy-turquoise);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: 2px solid var(--loid-blue-light);
+            background: var(--yor-black);
+            color: var(--bond-white);
+            font-size: 1.2rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--anya-pink);
+            box-shadow: 0 0 15px rgba(255, 158, 187, 0.3);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--anya-pink), var(--anya-pink-dark));
+            color: var(--yor-black);
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.6);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 2px solid var(--loid-blue-light);
+            color: var(--bond-white);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--spy-turquoise);
+            color: var(--yor-black);
+            border-color: var(--spy-turquoise);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* File Upload */
+        .file-upload-area {
+            border: 3px dashed var(--spy-turquoise);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(64, 224, 208, 0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            background: rgba(64, 224, 208, 0.1);
+            border-color: var(--anya-pink);
+        }
+
+        .file-list {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .file-tag {
+            background: var(--loid-blue);
+            color: var(--bond-white);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--spy-turquoise);
+        }
+
+        .remove-file {
+            color: var(--anya-pink);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Results */
+        .results-container {
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: rgba(26, 26, 26, 0.8);
+            border-left: 5px solid var(--accent-yellow);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .result-card.web {
+            border-left-color: var(--spy-turquoise);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .source-title {
+            color: var(--anya-pink);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .context-snippet {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #ddd;
+            font-style: italic;
+        }
+
+        .highlight {
+            background-color: rgba(255, 215, 0, 0.3);
+            color: var(--accent-yellow);
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .external-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .link-btn {
+            background: var(--loid-blue);
+            color: var(--bond-white);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            border: 1px solid var(--spy-turquoise);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .link-btn:hover {
+            background: var(--spy-turquoise);
+            color: var(--yor-black);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--anya-pink);
+            font-size: 1.2rem;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--anya-pink);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-pdf { background: #e74c3c; color: white; }
+        .badge-web { background: var(--spy-turquoise); color: var(--yor-black); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Waku Waku Vocabulary</h1>
+        <p>Encontre palavras em contextos reais. Missão de aprendizado aprovada!</p>
+        <div class="anya-quote">"Heh. (Aprovação silenciosa do seu estudo)"</div>
+    </header>
+
+    <div class="search-section">
+        <div class="input-group">
+            <input type="text" id="wordInput" placeholder="Digite uma palavra em inglês (ex: 'serendipity', 'resilient')..." autocomplete="off">
+            <button class="btn btn-primary" onclick="performSearch()">Investigar!</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('web')">🌐 Contexto Web</button>
+            <button class="tab-btn" onclick="switchTab('local')">📁 Meus Arquivos (PDF/TXT)</button>
+        </div>
+
+        <!-- Web Search Tab -->
+        <div id="web-tab" class="tab-content active">
+            <p style="margin-bottom: 15px; color: #aaa;">
+                Buscaremos definições e exemplos de uso em fontes confiáveis. Para buscas profundas em livros e notícias, use os atalhos abaixo.
+            </p>
+            <div id="web-results" class="results-container"></div>
+            
+            <div class="external-links" id="external-links" style="display: none;">
+                <a href="#" target="_blank" class="link-btn" id="link-books">📚 Google Livros</a>
+                <a href="#" target="_blank" class="link-btn" id="link-news">📰 Google Notícias</a>
+                <a href="#" target="_blank" class="link-btn" id="link-gutenberg">📖 Project Gutenberg</a>
+                <a href="#" target="_blank" class="link-btn" id="link-linguee">🌍 Linguee (Contexto PT-EN)</a>
+            </div>
+        </div>
+
+        <!-- Local File Search Tab -->
+        <div id="local-tab" class="tab-content">
+            <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                <p style="font-size: 1.2rem; color: var(--spy-turquoise); margin-bottom: 10px;">📂 Clique para selecionar PDFs ou arquivos de texto</p>
+                <p style="font-size: 0.9rem; color: #888;">Seus arquivos são processados localmente no seu navegador. Nada é enviado para a internet.</p>
+                <input type="file" id="fileInput" multiple accept=".pdf,.txt,.epub" style="display: none;" onchange="handleFiles(this.files)">
+            </div>
+            
+            <div class="file-list" id="fileList"></div>
+            
+            <button class="btn btn-primary" style="margin-top: 20px; width: 100%; background: var(--spy-turquoise); color: var(--yor-black);" onclick="searchLocalFiles()">
+                🔍 Varredura Local
+            </button>
+
+            <div id="local-loading" class="loading">
+                <div class="spinner"></div>
+                <p>Analisando documentos... (Isso pode levar alguns segundos para PDFs grandes)</p>
+            </div>
+
+            <div id="local-results" class="results-container"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedFiles = [];
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
+
+    async function performSearch() {
+        const word = document.getElementById('wordInput').value.trim();
+        if (!word) return alert("Por favor, digite uma palavra!");
+
+        const activeTab = document.querySelector('.tab-content.active').id;
+
+        if (activeTab === 'web-tab') {
+            await searchWeb(word);
+        } else {
+            await searchLocalFiles(word);
+        }
+    }
+
+    // --- WEB SEARCH LOGIC ---
+    async function searchWeb(word) {
+        const resultsContainer = document.getElementById('web-results');
+        const externalLinks = document.getElementById('external-links');
+        
+        resultsContainer.innerHTML = '<div class="loading" style="display:block"><div class="spinner"></div>Consultando a central de inteligência...</div>';
+        externalLinks.style.display = 'none';
+
+        try {
+            // Usando Wikipedia API como fonte confiável e CORS-friendly para contexto
+            const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(word)}`);
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.extract) {
+                    // Destacar a palavra no texto (case insensitive)
+                    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                    const highlightedText = data.extract.replace(regex, match => `<span class="highlight">${match}</span>`);
+                    
+                    resultsContainer.innerHTML = `
+                        <div class="result-card web">
+                            <div class="result-header">
+                                <span class="source-title">📖 Wikipedia (Contexto Enciclopédico)</span>
+                                <span class="badge badge-web">Web</span>
+                            </div>
+                            <p class="context-snippet">${highlightedText}</p>
+                        </div>
+                    `;
+                } else {
+                    resultsContainer.innerHTML = `<p style="text-align:center; color: #aaa;">Nenhum contexto enciclopédico direto encontrado. Tente os links externos abaixo.</p>`;
+                }
+            } else {
+                resultsContainer.innerHTML = `<p style="text-align:center; color: #aaa;">Palavra não encontrada na base de dados rápida. Use os links externos.</p>`;
+            }
+        } catch (error) {
+            console.error(error);
+            resultsContainer.innerHTML = `<p style="text-align:center; color: var(--anya-pink);">Erro na conexão com a central de dados.</p>`;
+        }
+
+        // Configurar links externos
+        document.getElementById('link-books').href = `https://www.google.com/search?tbm=bks&q="${word}"`;
+        document.getElementById('link-news').href = `https://www.google.com/search?tbm=nws&q="${word}"`;
+        document.getElementById('link-gutenberg').href = `https://www.gutenberg.org/ebooks/search/?query=${word}`;
+        document.getElementById('link-linguee').href = `https://www.linguee.com.br/ingles-portugues/traducao/${word}.html`;
+        
+        externalLinks.style.display = 'flex';
+    }
+
+    // --- LOCAL FILE SEARCH LOGIC ---
+    function handleFiles(files) {
+        for (let file of files) {
+            if (!selectedFiles.find(f => f.name === file.name)) {
+                selectedFiles.push(file);
+            }
+        }
+        renderFileList();
+    }
+
+    function renderFileList() {
+        const list = document.getElementById('fileList');
+        list.innerHTML = selectedFiles.map((file, index) => `
+            <div class="file-tag">
+                📄 ${file.name}
+                <span class="remove-file" onclick="removeFile(${index})">×</span>
+            </div>
+        `).join('');
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        renderFileList();
+    }
+
+    async function searchLocalFiles(specificWord = null) {
+        const word = specificWord || document.getElementById('wordInput').value.trim();
+        if (!word) return alert("Por favor, digite uma palavra para buscar!");
+        if (selectedFiles.length === 0) return alert("Selecione pelo menos um arquivo primeiro!");
+
+        const resultsContainer = document.getElementById('local-results');
+        const loading = document.getElementById('local-loading');
+        
+        resultsContainer.innerHTML = '';
+        loading.style.display = 'block';
+
+        let totalMatches = 0;
+
+        for (let file of selectedFiles) {
+            if (file.name.endsWith('.pdf')) {
+                const matches = await searchPDF(file, word);
+                if (matches.length > 0) {
+                    totalMatches += matches.length;
+                    displayLocalResults(file.name, matches, word, 'PDF');
+                }
+            } else if (file.name.endsWith('.txt')) {
+                const matches = await searchTXT(file, word);
+                if (matches.length > 0) {
+                    totalMatches += matches.length;
+                    displayLocalResults(file.name, matches, word, 'TXT');
+                }
+            } else {
+                alert(`Formato .${file.name.split('.').pop()} não suportado para busca profunda ainda. Use PDF ou TXT.`);
+            }
+        }
+
+        loading.style.display = 'none';
+        
+        if (totalMatches === 0) {
+            resultsContainer.innerHTML = `<p style="text-align:center; color: var(--anya-pink);">Nenhuma ocorrência de "${word}" encontrada nos arquivos selecionados.</p>`;
+        }
+    }
+
+    async function searchPDF(file, word) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+        const matches = [];
+        
+        // Regex para encontrar a palavra com contexto (50 caracteres antes e depois)
+        // \b garante que é a palavra inteira, 'i' é case-insensitive
+        const regex = new RegExp(`(.{0,60}\\b${word}\\b.{0,60})`, 'gi');
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const text = textContent.items.map(item => item.str).join(' ');
+            
+            const pageMatches = text.match(regex);
+            if (pageMatches) {
+                matches.push({
+                    page: i,
+                    snippets: pageMatches
+                });
+            }
+        }
+        return matches;
+    }
+
+    async function searchTXT(file, word) {
+        const text = await file.text();
+        const regex = new RegExp(`(.{0,60}\\b${word}\\b.{0,60})`, 'gi');
+        const matches = text.match(regex);
+        
+        if (matches) {
+            return [{ page: 1, snippets: matches }]; // TXT não tem páginas, tratamos como 1 bloco
+        }
+        return [];
+    }
+
+    function displayLocalResults(fileName, matches, word, type) {
+        const resultsContainer = document.getElementById('local-results');
+        
+        let html = `
+            <div class="result-card">
+                <div class="result-header">
+                    <span class="source-title">📁 ${fileName}</span>
+                    <span class="badge badge-pdf">${type}</span>
+                </div>
+        `;
+
+        matches.forEach(match => {
+            const pageInfo = type === 'PDF' ? `Página ${match.page}` : 'Arquivo Completo';
+            
+            match.snippets.forEach(snippet => {
+                // Destacar a palavra
+                const highlightRegex = new RegExp(`\\b${word}\\b`, 'gi');
+                const highlightedSnippet = snippet.replace(highlightRegex, `<span class="highlight">${word}</span>`);
+                
+                html += `
+                    <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <div style="color: var(--spy-turquoise); font-size: 0.85rem; margin-bottom: 5px; font-weight: bold;">
+                            📍 ${pageInfo}
+                        </div>
+                        <p class="context-snippet">"...${highlightedSnippet}..."</p>
+                    </div>
+                `;
+            });
+        });
+
+        html += `</div>`;
+        resultsContainer.innerHTML += html;
+    }
+
+    // Permitir busca ao pressionar Enter
+    document.getElementById('wordInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+</script>
+
+</body>
+</html>

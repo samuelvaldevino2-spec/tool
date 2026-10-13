@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>芳一 · Gramática JLPT N5 — Hoichi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+:root {
+    --sea-deep: #0a1628;
+    --sea: #0f1e3a;
+    --sea-light: #1a2d52;
+    --card: rgba(15, 30, 55, 0.5);
+    --border: rgba(212, 165, 116, 0.15);
+    --text: #f1f5f9;
+    --text-dim: #94a3b8;
+    --accent: #d4a574;
+    --accent-glow: rgba(212, 165, 116, 0.3);
+    --lantern: #f59e0b;
+    --ghost: rgba(148, 163, 184, 0.08);
+    --mastered: #6ee7b7;
+    --mastered-bg: rgba(110, 231, 183, 0.1);
+    --reviewing: #fbbf24;
+    --reviewing-bg: rgba(251, 191, 36, 0.1);
+    --learning: #f87171;
+    --learning-bg: rgba(248, 113, 113, 0.1);
+    --extra: #cbd5e1;
+    --extra-bg: rgba(203, 213, 225, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+    background: var(--sea-deep);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    background-image:
+        radial-gradient(ellipse at 20% 30%, rgba(212, 165, 116, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    color: var(--accent);
+}
+
+.subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.mastered { background: var(--mastered); }
+.legend-dot.reviewing { background: var(--reviewing); }
+.legend-dot.learning { background: var(--learning); }
+.legend-dot.extra { background: var(--extra); }
+
+/* Stats */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+}
+
+.stat-number.mastered { color: var(--mastered); }
+.stat-number.reviewing { color: var(--reviewing); }
+.stat-number.learning { color: var(--learning); }
+.stat-number.extra { color: var(--extra); }
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* Progress */
+.progress-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.progress-percent {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'Noto Serif JP', serif;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(212, 165, 116, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--lantern));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+    width: 0%;
+}
+
+/* Controls */
+.controls {
+    margin-bottom: 30px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.search-input::placeholder { color: var(--text-dim); }
+
+.cat-buttons, .status-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.cat-btn, .status-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.cat-btn:hover, .status-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+.cat-btn.active, .status-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--sea-deep);
+    font-weight: 600;
+}
+
+.status-btn[data-status="mastered"].active { background: var(--mastered); color: var(--sea-deep); }
+.status-btn[data-status="reviewing"].active { background: var(--reviewing); color: var(--sea-deep); }
+.status-btn[data-status="learning"].active { background: var(--learning); color: var(--sea-deep); }
+.status-btn[data-status="extra"].active { background: var(--extra); color: var(--sea-deep); }
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.export-btn {
+    padding: 10px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.export-btn:hover {
+    border-color: var(--accent);
+    background: rgba(212, 165, 116, 0.1);
+}
+
+/* Content */
+.category-section {
+    margin-bottom: 40px;
+}
+
+.category-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    color: var(--accent);
+}
+
+.grammar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+}
+
+.grammar-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s;
+    position: relative;
+    border-left: 3px solid var(--learning);
+}
+
+.grammar-card.mastered { border-left-color: var(--mastered); background: var(--mastered-bg); }
+.grammar-card.reviewing { border-left-color: var(--reviewing); background: var(--reviewing-bg); }
+.grammar-card.learning { border-left-color: var(--learning); background: var(--learning-bg); }
+.grammar-card.extra { border-left-color: var(--extra); background: var(--extra-bg); }
+
+.grammar-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.grammar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 10px;
+}
+
+.grammar-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'Noto Serif JP', serif;
+}
+
+.grammar-function {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.grammar-example {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: rgba(10, 22, 40, 0.5);
+    border-radius: 6px;
+    font-family: 'Noto Serif JP', serif;
+    border-left: 2px solid var(--accent);
+}
+
+.grammar-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.status-toggle {
+    flex: 1;
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.status-toggle:hover { border-color: var(--accent); color: var(--text); }
+
+.status-toggle.mastered { background: var(--mastered); border-color: var(--mastered); color: var(--sea-deep); font-weight: 600; }
+.status-toggle.reviewing { background: var(--reviewing); border-color: var(--reviewing); color: var(--sea-deep); font-weight: 600; }
+.status-toggle.learning { background: var(--learning); border-color: var(--learning); color: var(--sea-deep); font-weight: 600; }
+.status-toggle.extra { background: var(--extra); border-color: var(--extra); color: var(--sea-deep); font-weight: 600; }
+
+.copy-btn {
+    padding: 6px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.copy-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--accent);
+    color: var(--sea-deep);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 600px) {
+    h1 { font-size: 1.5rem; }
+    .grammar-grid { grid-template-columns: 1fr; }
+    .stat-number { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>芳一 · Gramática JLPT N5</h1>
+        <p class="subtitle">Hoichi, o sem orelhas — A melodia dos Heike no mar noturno</p>
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot mastered"></div><span>Dominada</span></div>
+            <div class="legend-item"><div class="legend-dot reviewing"></div><span>Revisando</span></div>
+            <div class="legend-item"><div class="legend-dot learning"></div><span>A estudar</span></div>
+            <div class="legend-item"><div class="legend-dot extra"></div><span>Complementar</span></div>
+        </div>
+    </header>
+
+    <div class="stats">
+        <div class="stat">
+            <span class="stat-number" id="totalCount">0</span>
+            <span class="stat-label">Total</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number mastered" id="masteredCount">0</span>
+            <span class="stat-label">Dominadas</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number reviewing" id="reviewingCount">0</span>
+            <span class="stat-label">Revisando</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number learning" id="learningCount">0</span>
+            <span class="stat-label">A estudar</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number extra" id="extraCount">0</span>
+            <span class="stat-label">Complementares</span>
+        </div>
+    </div>
+
+    <div class="progress-section">
+        <div class="progress-header">
+            <span class="progress-label">Domínio da gramática</span>
+            <span class="progress-percent" id="progressPercent">0.00%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <input type="text" class="search-input" id="searchInput" placeholder="Buscar por gramática, função ou exemplo...">
+
+        <div class="cat-buttons" id="categoryButtons"></div>
+
+        <div class="status-buttons" id="statusButtons">
+            <button class="status-btn active" data-status="all" onclick="filterStatus('all', this)">Todos os status</button>
+            <button class="status-btn" data-status="mastered" onclick="filterStatus('mastered', this)">🟢 Dominadas</button>
+            <button class="status-btn" data-status="reviewing" onclick="filterStatus('reviewing', this)">🟡 Revisando</button>
+            <button class="status-btn" data-status="learning" onclick="filterStatus('learning', this)"> A estudar</button>
+            <button class="status-btn" data-status="extra" onclick="filterStatus('extra', this)">⚪ Complementares</button>
+        </div>
+
+        <div class="export-buttons">
+            <button class="export-btn" onclick="exportFull()">📊 Exportar tudo (XLSX)</button>
+            <button class="export-btn" onclick="exportStudied()"> Exportar dominadas (XLSX)</button>
+        </div>
+    </div>
+
+    <div id="content"></div>
+</div>
+
+<div class="toast" id="toast">Copiado!</div>
+
+<script>
+const grammarData = {
+    "copula": {
+        name: "Cópula e Negação",
+        items: [
+            { id: "01", grammar: "です", function: "ser / estar — cópula", example: "私は学生です。", status: "reviewing" },
+            { id: "02", grammar: "じゃないです / ではありません", function: "negação da cópula", example: "学生じゃないです。", status: "learning" },
+            { id: "03", grammar: "でした", function: "passado da cópula", example: "学生でした。", status: "learning" },
+            { id: "04", grammar: "じゃなかったです / ではありませんでした", function: "passado negativo da cópula", example: "学生じゃなかったです。", status: "learning" },
+            { id: "05", grammar: "だ", function: "cópula informal", example: "これは本だ。", status: "learning" }
+        ]
+    },
+    "particulas-basicas": {
+        name: "Partículas Básicas",
+        items: [
+            { id: "06", grammar: "か", function: "marcador de pergunta", example: "これは何ですか。", status: "reviewing" },
+            { id: "07", grammar: "も", function: "também / também não", example: "私も学生です。", status: "learning" },
+            { id: "08", grammar: "の", function: "posse / relação entre substantivos", example: "私の車です。", status: "learning" },
+            { id: "09", grammar: "の — nominalização", function: "transformar ação em ideia/coisa", example: "日本語を勉強するのが好きです。", status: "learning" }
+        ]
+    },
+    "particulas": {
+        name: "Partículas",
+        items: [
+            { id: "10", grammar: "は", function: "tópico", example: "私はサムエルです。", status: "reviewing" },
+            { id: "11", grammar: "が", function: "sujeito / informação nova", example: "猫がいます。", status: "learning" },
+            { id: "12", grammar: "を", function: "objeto direto", example: "本を読みます。", status: "mastered" },
+            { id: "13", grammar: "に", function: "destino / tempo / alvo / existência", example: "日本に行きます。", status: "reviewing" },
+            { id: "14", grammar: "で", function: "local da ação / meio", example: "学校で勉強します。", status: "learning" },
+            { id: "15", grammar: "へ", function: "direção", example: "日本へ行きます。", status: "learning" },
+            { id: "16", grammar: "と", function: "com / e", example: "友達と行きます。", status: "learning" },
+            { id: "17", grammar: "や", function: "lista não exaustiva", example: "本やマンガを読みます。", status: "learning" },
+            { id: "18", grammar: "から", function: "de / desde / porque", example: "雨だから行きません。", status: "mastered" },
+            { id: "19", grammar: "まで", function: "até", example: "六時まで働きます。", status: "learning" },
+            { id: "20", grammar: "だけ", function: "somente / apenas", example: "水だけ飲みます。", status: "learning" }
+        ]
+    },
+    "demonstrativos": {
+        name: "Demonstrativos — こ・そ・あ・ど",
+        items: [
+            { id: "21", grammar: "これ・それ・あれ・どれ", function: "isto / isso / aquilo / qual", example: "これは何ですか。", status: "learning" },
+            { id: "22", grammar: "この・その・あの・どの", function: "este / esse / aquele / qual + substantivo", example: "この本は面白いです。", status: "learning" },
+            { id: "23", grammar: "ここ・そこ・あそこ・どこ", function: "aqui / aí / lá / onde", example: "トイレはどこですか。", status: "learning" },
+            { id: "24", grammar: "こちら・そちら・あちら・どちら", function: "formas polidas de direção/local", example: "こちらです。", status: "learning" }
+        ]
+    },
+    "adjetivos": {
+        name: "Adjetivos",
+        items: [
+            { id: "25", grammar: "い-adjetivos", function: "adjetivos terminados em い", example: "日本語は難しいです。", status: "reviewing" },
+            { id: "26", grammar: "い-adjetivo negativo", function: "〜くない", example: "高くないです。", status: "learning" },
+            { id: "27", grammar: "い-adjetivo passado", function: "〜かった", example: "難しかったです。", status: "learning" },
+            { id: "28", grammar: "い-adjetivo passado negativo", function: "〜くなかった", example: "高くなかったです。", status: "learning" },
+            { id: "29", grammar: "な-adjetivos", function: "adjetivos do tipo な", example: "静かな町です。", status: "reviewing" },
+            { id: "30", grammar: "な-adjetivo negativo", function: "〜じゃない", example: "静かじゃないです。", status: "learning" },
+            { id: "31", grammar: "な-adjetivo passado", function: "〜でした", example: "静かでした。", status: "learning" },
+            { id: "32", grammar: "Adjetivos com て", function: "conectar características", example: "難しくて、面白いです。", status: "reviewing" }
+        ]
+    },
+    "verbos-formas": {
+        name: "Verbos — formas básicas",
+        items: [
+            { id: "33", grammar: "ます", function: "presente/futuro polido", example: "日本語を勉強します。", status: "reviewing" },
+            { id: "34", grammar: "ません", function: "negativo polido", example: "勉強しません。", status: "learning" },
+            { id: "35", grammar: "ました", function: "passado polido", example: "勉強しました。", status: "learning" },
+            { id: "36", grammar: "ませんでした", function: "passado negativo polido", example: "勉強しませんでした。", status: "learning" },
+            { id: "37", grammar: "Forma de dicionário", function: "forma básica do verbo", example: "行く・食べる・する・来る", status: "reviewing" },
+            { id: "38", grammar: "ない-form", function: "negação informal", example: "行かない・食べない", status: "learning" },
+            { id: "39", grammar: "た-form", function: "passado informal", example: "行った・食べた", status: "learning" },
+            { id: "40", grammar: "て-form", function: "conexão e formação de várias estruturas", example: "食べて、寝ます。", status: "reviewing" }
+        ]
+    },
+    "te-form-usos": {
+        name: "Usos da て-form",
+        items: [
+            { id: "41", grammar: "〜てください", function: "pedido", example: "見てください。", status: "learning" },
+            { id: "42", grammar: "〜ています", function: "ação em andamento / estado", example: "勉強しています。", status: "learning" },
+            { id: "43", grammar: "〜てから", function: "depois de fazer", example: "食べてから勉強します。", status: "learning" },
+            { id: "44", grammar: "〜てもいいです", function: "permissão", example: "入ってもいいですか。", status: "learning" },
+            { id: "45", grammar: "〜てはいけません", function: "proibição", example: "入ってはいけません。", status: "learning" },
+            { id: "46", grammar: "〜て — sequência", function: "e / então", example: "起きて、勉強します。", status: "mastered" }
+        ]
+    },
+    "desejo-intencao": {
+        name: "Desejo, intenção e convite",
+        items: [
+            { id: "47", grammar: "〜たい", function: "querer fazer", example: "日本に行きたいです。", status: "mastered" },
+            { id: "48", grammar: "〜たくない", function: "não querer fazer", example: "行きたくないです。", status: "learning" },
+            { id: "49", grammar: "〜ましょう", function: "vamos / proposta", example: "行きましょう。", status: "learning" },
+            { id: "50", grammar: "〜ませんか", function: "convite", example: "一緒に行きませんか。", status: "learning" },
+            { id: "51", grammar: "〜ましょうか", function: "oferta / 'quer que eu...?'", example: "手伝いましょうか。", status: "learning" },
+            { id: "52", grammar: "〜ほしい", function: "querer uma coisa", example: "車がほしいです。", status: "learning" },
+            { id: "53", grammar: "〜つもり", function: "intenção / plano", example: "日本に行くつもりです。", status: "learning" }
+        ]
+    },
+    "capacidade": {
+        name: "Capacidade e nominalização",
+        items: [
+            { id: "54", grammar: "〜こと", function: "nominalização", example: "日本に住むことが夢です。", status: "mastered" },
+            { id: "55", grammar: "〜ことができる", function: "poder / conseguir fazer", example: "日本語を話すことができます。", status: "reviewing" },
+            { id: "56", grammar: "〜たことがある", function: "experiência passada", example: "日本に行ったことがあります。", status: "learning" },
+            { id: "57", grammar: "〜たり〜たりする", function: "dar exemplos de ações", example: "読んだり、見たりします。", status: "learning" }
+        ]
+    },
+    "causa-contraste": {
+        name: "Causa, contraste e conexão",
+        items: [
+            { id: "58", grammar: "〜から — causa", function: "porque", example: "難しいから勉強します。", status: "mastered" },
+            { id: "59", grammar: "〜ので", function: "porque / como", example: "雨なので行きません。", status: "learning" },
+            { id: "60", grammar: "〜けど", function: "mas / embora", example: "難しいけど、面白いです。", status: "learning" },
+            { id: "61", grammar: "〜が — contraste", function: "mas", example: "難しいですが、面白いです。", status: "learning" },
+            { id: "62", grammar: "でも", function: "mas / porém", example: "難しいです。でも、面白いです。", status: "learning" },
+            { id: "63", grammar: "そして", function: "e / então", example: "勉強しました。そして寝ました。", status: "learning" },
+            { id: "64", grammar: "それから", function: "depois / além disso", example: "それから日本語を勉強しました。", status: "learning" },
+            { id: "65", grammar: "それで", function: "por isso / então", example: "雨でした。それで帰りました。", status: "learning" },
+            { id: "66", grammar: "〜し", function: "acumular razões/características", example: "難しいし、面白いし、漢字も多いです。", status: "mastered" },
+            { id: "67", grammar: "〜ために", function: "para / a fim de", example: "日本に行くために勉強します。", status: "mastered" }
+        ]
+    },
+    "tempo-sequencia": {
+        name: "Tempo e sequência",
+        items: [
+            { id: "68", grammar: "〜とき", function: "quando", example: "日本に行ったとき。", status: "learning" },
+            { id: "69", grammar: "〜前に", function: "antes de", example: "寝る前に勉強します。", status: "learning" },
+            { id: "70", grammar: "〜後で", function: "depois de", example: "勉強した後で寝ます。", status: "learning" },
+            { id: "71", grammar: "〜始める", function: "começar a fazer", example: "日本語を勉強し始めます。", status: "mastered" },
+            { id: "72", grammar: "もう", function: "já / mais", example: "もう食べました。", status: "learning" },
+            { id: "73", grammar: "まだ", function: "ainda", example: "まだ食べていません。", status: "learning" }
+        ]
+    },
+    "comparacao": {
+        name: "Comparação e grau",
+        items: [
+            { id: "74", grammar: "より", function: "mais/menos que", example: "日本はブラジルより小さいです。", status: "learning" },
+            { id: "75", grammar: "〜のほうが", function: "mais / preferência", example: "日本のほうが好きです。", status: "learning" },
+            { id: "76", grammar: "一番", function: "o mais / o melhor", example: "日本語が一番好きです。", status: "learning" },
+            { id: "77", grammar: "とても", function: "muito", example: "とても難しいです。", status: "reviewing" },
+            { id: "78", grammar: "あまり + negativo", function: "não muito", example: "あまり難しくないです。", status: "learning" },
+            { id: "79", grammar: "ちょっと", function: "um pouco", example: "ちょっと難しいです。", status: "reviewing" }
+        ]
+    },
+    "existencia": {
+        name: "Existência e localização",
+        items: [
+            { id: "80", grammar: "あります", function: "existência de coisas", example: "車があります。", status: "learning" },
+            { id: "81", grammar: "います", function: "existência de seres vivos", example: "猫がいます。", status: "learning" },
+            { id: "82", grammar: "〜の上・下・前・後ろ", function: "posição", example: "机の上に本があります。", status: "learning" },
+            { id: "83", grammar: "〜の中・外", function: "dentro / fora", example: "部屋の中にいます。", status: "learning" },
+            { id: "84", grammar: "〜の隣・近く", function: "ao lado / perto", example: "駅の隣に店があります。", status: "learning" }
+        ]
+    },
+    "perguntas": {
+        name: "Perguntas",
+        items: [
+            { id: "85", grammar: "何", function: "o quê", example: "これは何ですか。", status: "reviewing" },
+            { id: "86", grammar: "誰", function: "quem", example: "あの人は誰ですか。", status: "learning" },
+            { id: "87", grammar: "どこ", function: "onde", example: "どこに行きますか。", status: "learning" },
+            { id: "88", grammar: "いつ", function: "quando", example: "いつ日本に行きますか。", status: "reviewing" },
+            { id: "89", grammar: "どう", function: "como", example: "どうですか。", status: "learning" },
+            { id: "90", grammar: "どうして", function: "por quê", example: "どうして勉強しますか。", status: "reviewing" },
+            { id: "91", grammar: "どんな", function: "que tipo de", example: "どんな人ですか。", status: "learning" },
+            { id: "92", grammar: "どうやって", function: "como / por qual método", example: "どうやって行きますか。", status: "learning" },
+            { id: "93", grammar: "いくら", function: "quanto custa", example: "これはいくらですか。", status: "learning" },
+            { id: "94", grammar: "いくつ", function: "quantos / quantos anos", example: "いくつありますか。", status: "learning" },
+            { id: "95", grammar: "どのぐらい / どれくらい", function: "quanto / por quanto tempo", example: "どのぐらい勉強しますか。", status: "learning" },
+            { id: "96", grammar: "〜はどうですか", function: "e quanto a...? / que tal...?", example: "日本はどうですか。", status: "learning" }
+        ]
+    },
+    "negacao-interrogativas": {
+        name: "Negação com palavras interrogativas",
+        items: [
+            { id: "97", grammar: "何も〜ない", function: "nada", example: "何も食べません。", status: "learning" },
+            { id: "98", grammar: "誰も〜ない", function: "ninguém", example: "誰もいません。", status: "learning" },
+            { id: "99", grammar: "どこも〜ない", function: "lugar nenhum", example: "どこにも行きません。", status: "learning" }
+        ]
+    },
+    "contadores": {
+        name: "Contadores e quantidade",
+        items: [
+            { id: "100", grammar: "〜つ", function: "contador geral", example: "りんごを三つ買います。", status: "learning" },
+            { id: "101", grammar: "〜人", function: "pessoas", example: "三人います。", status: "learning" },
+            { id: "102", grammar: "〜本", function: "objetos compridos", example: "ペンを二本買います。", status: "learning" },
+            { id: "103", grammar: "〜枚", function: "objetos planos", example: "紙を三枚使います。", status: "learning" },
+            { id: "104", grammar: "〜冊", function: "livros/volumes", example: "本を二冊買いました。", status: "learning" },
+            { id: "105", grammar: "〜台", function: "máquinas/veículos", example: "車が二台あります。", status: "learning" },
+            { id: "106", grammar: "〜匹", function: "animais pequenos", example: "猫が二匹います。", status: "learning" },
+            { id: "107", grammar: "〜歳", function: "idade", example: "十八歳です。", status: "learning" },
+            { id: "108", grammar: "〜回", function: "número de vezes", example: "三回行きました。", status: "learning" }
+        ]
+    },
+    "tempo-datas": {
+        name: "Tempo, datas e frequência",
+        items: [
+            { id: "109", grammar: "〜時", function: "horas", example: "七時です。", status: "learning" },
+            { id: "110", grammar: "〜分", function: "minutos", example: "十分です。", status: "learning" },
+            { id: "111", grammar: "〜日", function: "dias / datas", example: "三日です。", status: "learning" },
+            { id: "112", grammar: "〜週間", function: "semanas", example: "二週間勉強しました。", status: "learning" },
+            { id: "113", grammar: "〜か月", function: "meses de duração", example: "三か月勉強しました。", status: "learning" },
+            { id: "114", grammar: "〜年", function: "anos", example: "二年間住みました。", status: "learning" }
+        ]
+    },
+    "particulas-finais": {
+        name: "Partículas finais e nuance",
+        items: [
+            { id: "115", grammar: "ね", function: "confirmação / compartilhamento", example: "きれいですね。", status: "learning" },
+            { id: "116", grammar: "よ", function: "ênfase / informação ao interlocutor", example: "安全ですよ。", status: "learning" },
+            { id: "117", grammar: "よね", function: "confirmação com ênfase", example: "きれいですよね。", status: "extra" },
+            { id: "118", grammar: "でしょう", function: "provavelmente / não é?", example: "明日は雨でしょう。", status: "learning" }
+        ]
+    },
+    "complementares": {
+        name: "Estruturas complementares",
+        items: [
+            { id: "119", grammar: "ないで", function: "sem fazer", example: "朝ご飯を食べないで学校へ行きました。", status: "learning" },
+            { id: "120", grammar: "ないでください", function: "por favor, não faça", example: "ここで写真を撮らないでください。", status: "learning" },
+            { id: "121", grammar: "ながら", function: "enquanto faz", example: "音楽を聞きながら勉強します。", status: "learning" },
+            { id: "122", grammar: "なる", function: "tornar-se / ficar", example: "日本語が上手になります。", status: "learning" },
+            { id: "123", grammar: "〜くなる", function: "ficar + adjetivo い", example: "寒くなりました。", status: "learning" },
+            { id: "124", grammar: "〜になる", function: "ficar/tornar-se + substantivo/な-adjetivo", example: "神主になりたいです。", status: "reviewing" },
+            { id: "125", grammar: "あげる・もらう・くれる", function: "dar / receber", example: "友達に本をもらいました。", status: "learning" },
+            { id: "126", grammar: "ほうがいい", function: "ser melhor fazer", example: "勉強したほうがいいです。", status: "learning" },
+            { id: "127", grammar: "でしょうか", function: "pergunta especulativa/polida", example: "明日は晴れるでしょうか。", status: "extra" },
+            { id: "128", grammar: "と思う", function: "achar/pensar que", example: "日本は安全だと思います。", status: "extra" }
+        ]
+    }
+};
+
+const statusLabels = {
+    mastered: "Dominada",
+    reviewing: "Revisando",
+    learning: "A estudar",
+    extra: "Complementar"
+};
+
+let currentCategory = 'all';
+let currentStatus = 'all';
+let searchQuery = '';
+let itemStatus = {};
+
+function loadProgress() {
+    try {
+        const saved = localStorage.getItem('grammarStatus');
+        if (saved) {
+            itemStatus = JSON.parse(saved);
+        } else {
+            // Inicializar com status padrão dos dados
+            Object.values(grammarData).forEach(cat => {
+                cat.items.forEach(item => {
+                    itemStatus[item.id] = item.status;
+                });
+            });
+        }
+    } catch (e) { console.warn(e); }
+}
+
+function saveProgress() {
+    try {
+        localStorage.setItem('grammarStatus', JSON.stringify(itemStatus));
+    } catch (e) { console.warn(e); }
+}
+
+function getStatus(id) {
+    return itemStatus[id] || 'learning';
+}
+
+function setStatus(id, status) {
+    itemStatus[id] = status;
+    saveProgress();
+    renderContent();
+    updateStats();
+}
+
+function renderCategoryButtons() {
+    const container = document.getElementById('categoryButtons');
+    let html = '<button class="cat-btn active" onclick="selectCategory(\'all\', this)">Todas</button>';
+    Object.entries(grammarData).forEach(([key, cat]) => {
+        html += `<button class="cat-btn" onclick="selectCategory('${key}', this)">${cat.name}</button>`;
+    });
+    container.innerHTML = html;
+}
+
+function selectCategory(cat, btn) {
+    currentCategory = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderContent();
+}
+
+function filterStatus(status, btn) {
+    currentStatus = status;
+    document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderContent();
+}
+
+function copyGrammar(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.textContent = `「${text}」 copiado!`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+    });
+}
+
+function updateStats() {
+    let total = 0, mastered = 0, reviewing = 0, learning = 0, extra = 0;
+    Object.values(grammarData).forEach(cat => {
+        cat.items.forEach(item => {
+            total++;
+            const s = getStatus(item.id);
+            if (s === 'mastered') mastered++;
+            else if (s === 'reviewing') reviewing++;
+            else if (s === 'learning') learning++;
+            else if (s === 'extra') extra++;
+        });
+    });
+
+    document.getElementById('totalCount').textContent = total;
+    document.getElementById('masteredCount').textContent = mastered;
+    document.getElementById('reviewingCount').textContent = reviewing;
+    document.getElementById('learningCount').textContent = learning;
+    document.getElementById('extraCount').textContent = extra;
+
+    // Porcentagem considera dominadas + revisando como "domínio parcial"
+    const masteredOnly = mastered;
+    const percentage = total > 0 ? (masteredOnly / total) * 100 : 0;
+    const percentText = percentage.toFixed(2) + '%';
+    document.getElementById('progressPercent').textContent = percentText;
+    document.getElementById('progressBar').style.width = percentText;
+}
+
+function matchesSearch(item) {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return item.grammar.toLowerCase().includes(q) ||
+           item.function.toLowerCase().includes(q) ||
+           item.example.toLowerCase().includes(q);
+}
+
+function renderContent() {
+    const container = document.getElementById('content');
+    let html = '';
+
+    Object.entries(grammarData).forEach(([key, cat]) => {
+        if (currentCategory !== 'all' && currentCategory !== key) return;
+
+        const filtered = cat.items.filter(item => {
+            const statusMatch = currentStatus === 'all' || getStatus(item.id) === currentStatus;
+            return statusMatch && matchesSearch(item);
+        });
+
+        if (filtered.length === 0) return;
+
+        html += `
+            <div class="category-section">
+                <h2 class="category-title">${cat.name}</h2>
+                <div class="grammar-grid">
+        `;
+
+        filtered.forEach(item => {
+            const status = getStatus(item.id);
+            html += `
+                <div class="grammar-card ${status}">
+                    <div class="grammar-header">
+                        <div class="grammar-name">${item.grammar}</div>
+                    </div>
+                    <div class="grammar-function">${item.function}</div>
+                    <div class="grammar-example">${item.example}</div>
+                    <div class="grammar-actions">
+                        <button class="status-toggle mastered ${status === 'mastered' ? 'mastered' : ''}" onclick="setStatus('${item.id}', 'mastered')">🟢 Dominada</button>
+                        <button class="status-toggle reviewing ${status === 'reviewing' ? 'reviewing' : ''}" onclick="setStatus('${item.id}', 'reviewing')"> Revisando</button>
+                        <button class="status-toggle learning ${status === 'learning' ? 'learning' : ''}" onclick="setStatus('${item.id}', 'learning')">🔴 Estudar</button>
+                        <button class="status-toggle extra ${status === 'extra' ? 'extra' : ''}" onclick="setStatus('${item.id}', 'extra')"> Extra</button>
+                        <button class="copy-btn" onclick="copyGrammar('${item.grammar}')">📋</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div></div>';
+    });
+
+    container.innerHTML = html;
+}
+
+function exportFull() {
+    const wb = XLSX.utils.book_new();
+    const wsData = [['ID', 'Categoria', 'Gramática', 'Função', 'Exemplo', 'Status']];
+
+    Object.entries(grammarData).forEach(([key, cat]) => {
+        cat.items.forEach(item => {
+            wsData.push([item.id, cat.name, item.grammar, item.function, item.example, statusLabels[getStatus(item.id)]]);
+        });
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = [
+        { wch: 5 }, { wch: 25 }, { wch: 25 }, { wch: 35 }, { wch: 40 }, { wch: 15 }
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Gramática N5');
+    XLSX.writeFile(wb, 'gramatica_n5_completa.xlsx');
+    showToast('Tabela completa exportada!');
+}
+
+function exportStudied() {
+    const wb = XLSX.utils.book_new();
+    const wsData = [['ID', 'Categoria', 'Gramática', 'Função', 'Exemplo', 'Status']];
+
+    Object.entries(grammarData).forEach(([key, cat]) => {
+        cat.items.forEach(item => {
+            const s = getStatus(item.id);
+            if (s === 'mastered' || s === 'reviewing') {
+                wsData.push([item.id, cat.name, item.grammar, item.function, item.example, statusLabels[s]]);
+            }
+        });
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = [
+        { wch: 5 }, { wch: 25 }, { wch: 25 }, { wch: 35 }, { wch: 40 }, { wch: 15 }
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Gramática Dominada');
+    XLSX.writeFile(wb, 'gramatica_n5_dominada.xlsx');
+    showToast('Gramática dominada exportada!');
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    renderContent();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadProgress();
+    renderCategoryButtons();
+    renderContent();
+    updateStats();
+});
+</script>
+
+</body>
+</html>
